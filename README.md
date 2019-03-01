@@ -17,9 +17,9 @@
 _more soon_
 
 ## User Stories
-- As a user I want to put in code arguments like `put animal horse` that work with a Go CLI 'client' to take the commands in a terminal and add the values `animal` and `horse` as a `key:value` pair in this `SimpleKeyValueCache` construct
+- As a user I want to put in code arguments like `create animal horse` that work with a Go CLI 'client' to take the commands in a terminal and add the values `animal` and `horse` as a `key:value` pair in this `SimpleKeyValueCache` construct
 - As a user I want to type in the command `read animal` to the CLI and have the Go application return `>>horse`
-- As a developer I want unit tests for each method (`Put`, `Read`, `Update`, `Delete`) that prove it works with both good and bad input
+- As a developer I want unit tests for each method (`Create`, `Read`, `Update`, `Delete`) that prove it works with both good and bad input
 - As a developer I want to use the Cobra library to build the CLI (per Troy Dai)
 * As a developer I want to use the Go Flag library in the CLI (per Troy & Scott)
 - As a developer I want unit tests for each command 
@@ -28,7 +28,7 @@ _more soon_
 
 
 ## Expected command behaviors
-- **`put`** puts a `key` string and a `value` string into a the designed simple value cache struct as a key:value pair
+- **`create`** puts a `key` string and a `value` string into a the designed simple value cache struct as a key:value pair
 - **`read`** takes an input string `key` finds that in the cache (checking to be sure cache exists and key exists) and return it's paired `value` string
 - **`update`** allows user to input any existing `key` string and change it's `value` string(after checking that cache and key exists)
 - **`delete`** allows user to delete `key-value` string pair by inputting just the `key` from the cache (after checking that the cache and key exist)
