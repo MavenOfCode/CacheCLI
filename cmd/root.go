@@ -40,17 +40,13 @@ var readCmd = &cobra.Command{
 	Long: "read value string out to command line from key-value cache given key string input from command line",
 	RunE: func(cmd *cobra.Command, args []string) error  {
 		fmt.Println(args, len(args))
-		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Put("name", "harley")
-		read1,_ := cache.Read("name")
-		fmt.Println(read1)
-		cache.Put("kitten", "Bene")
-		read2,_ := cache.Read("kitten")
-		fmt.Println(read2)
-
 		if cache == nil {
 			return errors.New("cache empty - read failed: ")
 		}
+		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
+		cache.Put("name", "harley")
+		cache.Put("animal", "horse")
+		cache.Put("kitten", "Bene")
 		readResult, err := cache.Read(args[0])
 		fmt.Println(readResult)
 		fmt.Println(err)
@@ -87,7 +83,7 @@ var updateCmd = &cobra.Command{
 
 var deleteCmd = &cobra.Command{
 	Use:  "delete",
-	Args: cobra.MinimumNArgs(2),
+	Args: cobra.MinimumNArgs(1),
 	Short: "delete key-value pair",
 	Long:  "delete key value strings into the key-value cache",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -100,7 +96,7 @@ var deleteCmd = &cobra.Command{
 		cache.Put("kitten", "Bene")
 		deleteResult := cache.Delete(args[0])
 		if deleteResult == nil {
-			fmt.Printf("delete success:  cache '%v' ", cache)
+			fmt.Printf("delete success: cache '%v' ", cache)
 			fmt.Println()
 			return nil
 		}
