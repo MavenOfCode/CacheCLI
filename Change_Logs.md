@@ -3,7 +3,7 @@ Provide logs of terminal output/tests with date & time stamps to note progress/c
 
 - 2/28/19 4:29 PM
 
-    * _**NOTE:**_ All commands have prepopulated cache data as needed, due to current lack of connection to cache server. **THIS WILL CHANGE**
+    * _**NOTE:**_ All commands have pre-populated cache data as needed, due to current lack of connection to cache server. **THIS WILL CHANGE**
     
     - [x] All commands show in help menu
     - [x] Put command message shows success
@@ -11,7 +11,7 @@ Provide logs of terminal output/tests with date & time stamps to note progress/c
     - [x] Update command works
     - [x] Delete command works
     
-    * _**COMMENT**_ currently using terminal as intermmediate test harness. Unit/Integration tests next after commands all work
+    * _**COMMENT**_ currently using terminal as intermediate test harness. Unit/Integration tests next after commands all work
     
     ```
     richm :~/gocode/src/CacheCLI :[thurs-new-cli !] go build -o cli

@@ -39,7 +39,6 @@ var readCmd = &cobra.Command{
 	Args: cobra.MinimumNArgs(1),
 	Long: "read value string out to command line from key-value cache given key string input from command line",
 	RunE: func(cmd *cobra.Command, args []string) error  {
-		fmt.Println(args, len(args))
 		if cache == nil {
 			return errors.New("cache empty - read failed: ")
 		}
@@ -48,12 +47,10 @@ var readCmd = &cobra.Command{
 		cache.Put("animal", "horse")
 		cache.Put("kitten", "Bene")
 		readResult, err := cache.Read(args[0])
-		fmt.Println(readResult)
-		fmt.Println(err)
 		if err !=nil {
 			return err
 		}
-		fmt.Println(">>", readResult)
+		fmt.Println(">> value for key is: ", readResult)
 		return nil
 	},
 }
@@ -77,7 +74,8 @@ var updateCmd = &cobra.Command{
 			fmt.Println()
 			return nil
 		}
-		return errors.New("update fail")
+		fmt.Println(updateResult)
+		return errors.New("")
 	},
 }
 
@@ -100,7 +98,8 @@ var deleteCmd = &cobra.Command{
 			fmt.Println()
 			return nil
 		}
-		return errors.New("delete fail")
+		fmt.Println(deleteResult)
+		return errors.New("")
 	},
 }
 
