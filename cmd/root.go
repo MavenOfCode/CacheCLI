@@ -13,26 +13,26 @@ var cache = kvcache.NewSimpleKVCache()
 
 //make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
 var RootCmd = &cobra.Command{Use:"cli"}
-var putCmd = &cobra.Command{
-	Use:   "put",
+var createCmd = &cobra.Command{
+	Use:   "create",
 	Args: cobra.MinimumNArgs(2),
-	Short: "put key-value pair",
-	Long:  "put key value strings into the key-value cache",
+	Short: "create key-value pair",
+	Long:  "create key value strings into the key-value cache",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if cache == nil {
-			return errors.New("cache not initialized - put failed: ")
+			return errors.New("cache not initialized - create failed: ")
 		}
-		putResult := cache.Put(args[0],args[1])
+		createResult := cache.Create(args[0],args[1])
 		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Put("name", "harley")
-		cache.Put("animal", "horse")
-		cache.Put("kitten", "Bene")
-		if putResult == nil {
-			fmt.Printf("put success:  cache '%v' ", cache)
+		cache.Create("name", "harley")
+		cache.Create("animal", "horse")
+		cache.Create("kitten", "Bene")
+		if createResult == nil {
+			fmt.Printf("create success:  cache '%v' ", cache)
 			fmt.Println()
 			return nil
 		}
-		return errors.New("put fail")
+		return errors.New("create fail")
 	},
 }
 
@@ -47,9 +47,9 @@ var readCmd = &cobra.Command{
 			return errors.New("cache empty - read failed: ")
 		}
 		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Put("name", "harley")
-		cache.Put("animal", "horse")
-		cache.Put("kitten", "Bene")
+		cache.Create("name", "harley")
+		cache.Create("animal", "horse")
+		cache.Create("kitten", "Bene")
 		readResult, err := cache.Read(args[0])
 		if err !=nil {
 			return err
@@ -66,12 +66,12 @@ var updateCmd = &cobra.Command{
 	Long:  "update key value strings into the key-value cache",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if cache == nil {
-			return errors.New("cache not initialized - put failed: ")
+			return errors.New("cache not initialized - update failed: ")
 		}
 		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Put("name", "harley")
-		cache.Put("animal", "horse")
-		cache.Put("kitten", "Bene")
+		cache.Create("name", "harley")
+		cache.Create("animal", "horse")
+		cache.Create("kitten", "Bene")
 		updateResult := cache.Update(args[0],args[1])
 		if updateResult == nil {
 			fmt.Printf("update success:  cache '%v' ", cache)
@@ -90,12 +90,12 @@ var deleteCmd = &cobra.Command{
 	Long:  "delete key value strings into the key-value cache",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if cache == nil {
-			return errors.New("cache not initialized - put failed: ")
+			return errors.New("cache not initialized - delete failed: ")
 		}
 		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Put("name", "harley")
-		cache.Put("animal", "horse")
-		cache.Put("kitten", "Bene")
+		cache.Create("name", "harley")
+		cache.Create("animal", "horse")
+		cache.Create("kitten", "Bene")
 		deleteResult := cache.Delete(args[0])
 		if deleteResult == nil {
 			fmt.Printf("delete success: cache '%v' ", cache)
@@ -117,7 +117,7 @@ func Execute() {
 	}
 
 	//attach subcommands to rootcommand
-	RootCmd.AddCommand(putCmd)
+	RootCmd.AddCommand(createCmd)
 	RootCmd.AddCommand(readCmd)
 	RootCmd.AddCommand(updateCmd)
 	RootCmd.AddCommand(deleteCmd)

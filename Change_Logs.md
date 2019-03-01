@@ -258,4 +258,7 @@ Tests for `update` command in terminal.
     delete success: cache '&{map[name:harley kitten:Bene]}' 
     srichm :~/gocode/src/CacheCLI :[thurs-new-cli !] 
     ```
-    
+
+3/1/19
+
+_**NOTE**_ : *`put`* method refactored to *`create`* 
