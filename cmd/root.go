@@ -23,6 +23,10 @@ var putCmd = &cobra.Command{
 			return errors.New("cache not initialized - put failed: ")
 		}
 		putResult := cache.Put(args[0],args[1])
+		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
+		cache.Put("name", "harley")
+		cache.Put("animal", "horse")
+		cache.Put("kitten", "Bene")
 		if putResult == nil {
 			fmt.Printf("put success:  cache '%v' ", cache)
 			fmt.Println()

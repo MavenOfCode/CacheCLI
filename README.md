@@ -5,8 +5,8 @@
 - Practice writing tests in Go
 - Learn more about structs and interfaces
 - Learn to work with Cobra and other Go libraries
-- Learn about gRPC and how to connect CLI with servers like [KeyValueCache](https://github.com/FavoredFortune/KeyValueCache)
-- Grow project over time to add other technologies and learning goals
+- Learn about gRPC and how to connect CLI with simple string key-value cache servers like [KeyValueCache](https://github.com/FavoredFortune/KeyValueCache)
+- Grow project over time to add other technologies and achieve other learning goals
 
 ## Technologies
 - Go
@@ -28,14 +28,17 @@ _more soon_
 
 
 ## Expected command behaviors
-- "put" puts a `key` string and a `value` string into a the designed simple value cache struct as a key:value pair
-- "read" takes an input string `key` finds that in the cache (checking to be sure cache exists and key exists) and return it's paired `value` string
-- "update" allows user to input any existing `key` string and change it's `value` string(after checking that cache and key exists)
-- "delete" allows user to delete `key-value` string pair by inputting just the `key` from the cache (after checking that the cache and key exist)
+- **`put`** puts a `key` string and a `value` string into a the designed simple value cache struct as a key:value pair
+- **`read`** takes an input string `key` finds that in the cache (checking to be sure cache exists and key exists) and return it's paired `value` string
+- **`update`** allows user to input any existing `key` string and change it's `value` string(after checking that cache and key exists)
+- **`delete`** allows user to delete `key-value` string pair by inputting just the `key` from the cache (after checking that the cache and key exist)
+
+## See [Change logs](Change_Logs.md) for detailed examples of command behaviors throughtout development 
 
 ## Future state of CLI
 - Include flags for `key` that are `-k` or `-key` and `-v` and `-value` for value
 - Have verbose manual option available with typing in command `man`
+- Future `Read` command feature could have note if extra args passed in and return message like "I notice extra words in your `read` command, did you mean to `put` or `update` a key value pair instead of `read`?"
 
 
 ## Resources
@@ -60,5 +63,5 @@ https://github.com/spf13/cobra/pull/817
 
 - More on flags: https://flaviocopes.com/go-command-line-flags/
 
-#### Practice CLI project
-- See https://github.com/FavoredFortune/CobraCLI for application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)
+#### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)
+- See [this project](https://github.com/FavoredFortune/CobraCLI) example CLI application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)
