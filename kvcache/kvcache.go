@@ -34,9 +34,7 @@ func (c *SimpleKeyValueCache) Create(key,value string) error{
 		return fmt.Errorf("create failed: key '%v' isn't unique: ", key)
 	}
 	c.Data[key] = value
-	//testing if put really assigns value to cache
-	//result := c.Data[key]
-	//fmt.Println(result)
+
 	return nil
 }
 
@@ -51,7 +49,7 @@ func (c *SimpleKeyValueCache) Read(key string) (string,error){
 
 func (c *SimpleKeyValueCache) Update(key, value string) error{
 	_, keyExists := c.Data[key]
-	if keyExists {
+	if keyExists == false {
 		c.Data[key] = value
 		return nil
 	}

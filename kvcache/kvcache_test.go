@@ -1,6 +1,7 @@
 package kvcache
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -63,15 +64,23 @@ func TestCreate(t *testing.T) {
 		key := "name"
 		value := "bobby"
 		err := testCache.Create(key,value)
-		assert.NoError(t, err, "no error in put")
-		//errR,_ := testCache.Read(key)
+		assert.NoError(t, err, "no error in create")
+
+		//prove create worked
+		firstCreate,_ := testCache.Read(key)
+		fmt.Println(firstCreate)
 
 		key2 := "name"
 		value2 := "betty"
 		err2 := testCache.Create(key2, value2)
+
+		//prove that create with duplicate key value fails
+		fmt.Println(err2)
 		assert.Error(t, err2, "create failed: key ' ' isn't unique: ")
-		//_, err2R := testCache.Read(key2)
-		//assert.NotEqual(t, errR ,err2R)
+
+		//prove that second create command doesn't change original value in cache
+		readCheck,err := testCache.Read(key2)
+		fmt.Println(readCheck)
 
 	})
 }
