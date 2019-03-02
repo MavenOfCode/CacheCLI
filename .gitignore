@@ -13,6 +13,7 @@
 *.pif
 *.vb
 *.wsf
+bin/*
 
 ### Go ###
 # Binaries for programs and plugins
