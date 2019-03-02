@@ -28,9 +28,9 @@ _more soon_
 - More developer stories details coming soon from Scott
 
 ## Instructions to build the CLI
-1. Download both [this](https://github.com/FavoredFortune/CacheCLI) and the [cache](https://github.com/FavoredFortune/CacheCLI) repos into the same `go/src` directory within your home user directory
+1. Download both [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
 
-2. In your terminal, go the the `go/src` directory where both project repos now live
+2. In your terminal, go the the `go/src` directory where the project repo now lives
 3. Type `go build -o cli` into the command line of the terminal. This generates the binary executable that will allow you to use the command line interface (CLI)
 
 
