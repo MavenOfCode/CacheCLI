@@ -31,11 +31,11 @@ _more soon_
 1. Download both [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
 
 2. In your terminal, go the the `go/src` directory where the project repo now lives
-3. Type `go build -o cli` into the command line of the terminal. This generates the binary executable that will allow you to use the command line interface (CLI)
+3. Type `go build -o bin/cli` into the command line of the terminal. This generates the binary executable that will allow you to use the command line interface (CLI)
 
 
 ## Instructions to run / use the CLI
-1. To execute any command in this CLI, be sure to be inside it's directory where the file lives and  always type `./cli` first
+1. To execute any command in this CLI, be sure to be inside it's directory where the file lives (inside the `bin` directory you just created with the `go build -o bin/cli` command and  always type `./cli` first
 1. After writing `./cli` you may enter your chosen command from these options followed by the required data strings as noted in the [Expected Command Behaviors ](#Expected Command Behaviors) section below : 
     *  **help**, **-h** (no other information input)
     
@@ -129,6 +129,9 @@ https://github.com/spf13/cobra/pull/817
 - Go Documentation on flags: https://golang.org/pkg/flag/
 
 - More on flags: https://flaviocopes.com/go-command-line-flags/
+
+- Adjust build creation to help make not pushing up go binary files easier: https://stackoverflow.com/questions/9952061/git-ignore-compiled-google-go
+
 
 #### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)
 - See [this project](https://github.com/FavoredFortune/CobraCLI) example CLI application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)
