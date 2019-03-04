@@ -8,11 +8,11 @@ import (
 	"os"
 )
 
-//use constructor from kvcache package for global access to struct and it's private fields per Troy
+//use constructor from kvcache package for global access to struct and it's private fields
 var cache = kvcache.NewSimpleKVCache()
+
+//use struct CommandRunner to enable running of either Mock or Real commands with Mock or Simple KVCache
 var CommandRun = CommandRunner{cache:cache}
-
-
 
 //make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
 var RootCmd = &cobra.Command{Use:"cli"}
@@ -30,21 +30,7 @@ var readCmd = &cobra.Command{
 	Short: "read given key and return value",
 	Args: cobra.MinimumNArgs(1),
 	Long: "read value string out to command line from key-value cache given key string input from command line",
-	RunE: func(cmd *cobra.Command, args []string) error  {
-		if cache == nil {
-			return errors.New("cache empty - read failed: ")
-		}
-		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Create("name", "harley")
-		cache.Create("animal", "horse")
-		cache.Create("kitten", "Bene")
-		readResult, err := cache.Read(args[0])
-		if err !=nil {
-			return err
-		}
-		fmt.Println(">> value for key is: ", readResult)
-		return nil
-	},
+	//RunE:
 }
 
 var updateCmd = &cobra.Command{

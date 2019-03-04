@@ -17,7 +17,6 @@ func (c *CommandRunner) CreateCmd (cmd *cobra.Command, args []string) error {
 		return errors.New("create failed: insufficient arguments provided")
 	}
 
-	fmt.Println(cache)
 	if  cache != nil {
 		createResult := cache.Create(args[0],args[1])
 		if createResult == nil {
