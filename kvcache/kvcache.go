@@ -6,11 +6,50 @@ import (
 
 //interface for use by all files (public by using cap at start of name)
 type KeyValueCache interface{
-	Put(key, value string) error
+	Create(key, value string) error
 	Read(key string) (string,error)
 	Update(key,value string) error
 	Delete(key string) error
 }
+
+type MockKeyValueCache struct{
+	willFail bool
+	returnString string
+}
+
+func (m *MockKeyValueCache) Create(key,value string) error{
+	return nil
+}
+
+func (m *MockKeyValueCache) Read(key string) (string,error){
+	if m.willFail {
+		return m.returnString, nil
+	}
+	return "", fmt.Errorf("oops")
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 type SimpleKeyValueCache struct{
 	Data map[string]string
