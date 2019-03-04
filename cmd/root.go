@@ -13,14 +13,13 @@ var cache = kvcache.NewSimpleKVCache()
 
 //make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
 var RootCmd = &cobra.Command{Use:"cli"}
-var createCmd = &cobra.Command{
+var createCmd *cobra.Command = &cobra.Command{
 	Use:   "create",
-	Args: cobra.MinimumNArgs(2),
+	Args:  cobra.MinimumNArgs(2),
 	Short: "create key-value pair",
 	Long:  "create key value strings into the key-value cache",
-	RunE: cmdRunner{
-		KeyValueCache: nil,
-	}.createCmd,
+//	Run:
+//},
 }
 
 //trying use of minimum args in command to avoid writing RunE function with error to test for args length
