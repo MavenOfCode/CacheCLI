@@ -10,16 +10,18 @@ import (
 
 //use constructor from kvcache package for global access to struct and it's private fields per Troy
 var cache = kvcache.NewSimpleKVCache()
+var CommandRun = CommandRunner{cache:cache}
+
+
 
 //make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
 var RootCmd = &cobra.Command{Use:"cli"}
-var createCmd *cobra.Command = &cobra.Command{
+var createCmd = &cobra.Command{
 	Use:   "create",
 	Args:  cobra.MinimumNArgs(2),
 	Short: "create key-value pair",
 	Long:  "create key value strings into the key-value cache",
-//	Run:
-//},
+	RunE:   CommandRun.CreateCmd,
 }
 
 //trying use of minimum args in command to avoid writing RunE function with error to test for args length

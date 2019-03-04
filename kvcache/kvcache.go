@@ -24,8 +24,8 @@ func NewSimpleKVCache() *SimpleKeyValueCache{
 
 /* MockCache struct and implementation of KVC interface for testing of KVC CLI commands */
 type MockKeyValueCache struct{
-	willFail bool
-	returnString string
+	WillFail bool
+	ReturnString string
 }
 
 func (m *MockKeyValueCache) Create(key,value string) error{
@@ -33,8 +33,8 @@ func (m *MockKeyValueCache) Create(key,value string) error{
 }
 
 func (m *MockKeyValueCache) Read(key string) (string,error){
-	if m.willFail {
-		return m.returnString, nil
+	if m.WillFail {
+		return m.ReturnString, nil
 	}
 	return "", fmt.Errorf("read error")
 }
@@ -54,6 +54,12 @@ func NewMockSimpleKVCache() *MockKeyValueCache{
 
 /*working implementation of KVC interface*/
 func (c *SimpleKeyValueCache) Create(key,value string) error{
+	
+	if c == nil {
+		c.Data[key] = value
+		return nil
+		
+	}
 
 	//added if statement to match read behavior and logic for empty string
 	if key =="" || value =="" {

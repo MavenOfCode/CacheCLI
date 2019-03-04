@@ -7,26 +7,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type cmdRunner struct {
-	kvcache.SimpleKeyValueCache
+type CommandRunner struct {
+	cache kvcache.KeyValueCache
 }
 
-
-
-func (c *cmdRunner) CreateCmd (cmd *cobra.Command, args []string) error {
-	if cache == nil {
-		return errors.New("cache not initialized - create failed: ")
-	}
+func (c *CommandRunner) CreateCmd (cmd *cobra.Command, args []string) error {
 	//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
 	cache.Create("name", "harley")
 	cache.Create("animal", "horse")
 	cache.Create("kitten", "Bene")
 
-	createResult := cache.Create(args[0],args[1])
-	if createResult == nil {
-		fmt.Printf("create success:  cache '%v' ", cache)
-		fmt.Println()
-		return nil
+	if len(args) < 2{
+		return errors.New("create failed: insufficient arguments provided")
 	}
-	return errors.New("create fail")
+
+	fmt.Println(cache)
+	if  cache != nil {
+		createResult := cache.Create(args[0],args[1])
+		if createResult == nil {
+			fmt.Printf("create success:  cache '%v' ", cache)
+			fmt.Println()
+			return nil
+		}
+	}
+	return errors.New("create failed: cache not initialized")
 }

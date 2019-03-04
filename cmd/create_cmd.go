@@ -3,8 +3,9 @@ package cmd
 import (
 	_ "github.com/spf13/cobra"
 )
-//
-//func (c *cmdRunner) CreateCmd (cmd *cobra.Command, args []string) error {
+
+
+//func (c *CmdRunner) CreateCmd (cmd *cobra.Command, args []string) error {
 //	if cache == nil {
 //		return errors.New("cache not initialized - create failed: ")
 //	}

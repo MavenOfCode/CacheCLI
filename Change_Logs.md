@@ -261,4 +261,36 @@ Tests for `update` command in terminal.
 
 3/1/19
 
-_**NOTE**_ : *`put`* method refactored to *`create`* 
+_**NOTE**_ : *`put`* method refactored to *`create`*
+
+3/4/19 3:09 PM
+ 
+ -[x] MockKVCache and associate implementation of Mock methods created in KVCache file
+ -[x] CommandRunner struct created to run either MockKVCache or SimpleKVCache for both test and production implementations of the `kvc` CLI application
+ -[x] CreateCmd abstracted away from root.go command file
+ -[x] Unit test for MockKVCache pass
+ -[x] Unit tests for CreateCommand pass
+ -[x] Terminal as test harness tests pass for CreateCommand
+   ```srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] go build -o kvc
+      srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create good book
+      &{map[name:harley animal:horse kitten:Bene]}
+      create success:  cache '&{map[name:harley animal:horse kitten:Bene good:book]}' 
+      srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book
+      Error: requires at least 2 arg(s), only received 1
+      Usage:
+        cli create [flags]
+      
+      Flags:
+        -h, --help   help for create
+      
+      srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create
+      Error: requires at least 2 arg(s), only received 0
+      Usage:
+        cli create [flags]
+      
+      Flags:
+        -h, --help   help for create
+      
+      srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] 
+  ```
+  
