@@ -18,7 +18,9 @@ var createCmd = &cobra.Command{
 	Args: cobra.MinimumNArgs(2),
 	Short: "create key-value pair",
 	Long:  "create key value strings into the key-value cache",
-	RunE: cmdRunner.Create(....),
+	RunE: cmdRunner{
+		KeyValueCache: nil,
+	}.createCmd,
 }
 
 //trying use of minimum args in command to avoid writing RunE function with error to test for args length
