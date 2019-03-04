@@ -12,6 +12,17 @@ type KeyValueCache interface{
 	Delete(key string) error
 }
 
+
+type SimpleKeyValueCache struct{
+	Data map[string]string
+}
+
+//constructor function for generating cache
+func NewSimpleKVCache() *SimpleKeyValueCache{
+	return &SimpleKeyValueCache{map[string]string{}}
+}
+
+/* MockCache struct and implementation of KVC interface for testing of KVC CLI commands */
 type MockKeyValueCache struct{
 	willFail bool
 	returnString string
@@ -25,42 +36,23 @@ func (m *MockKeyValueCache) Read(key string) (string,error){
 	if m.willFail {
 		return m.returnString, nil
 	}
-	return "", fmt.Errorf("oops")
+	return "", fmt.Errorf("read error")
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-type SimpleKeyValueCache struct{
-	Data map[string]string
+func (m *MockKeyValueCache) Update(key, value string) error  {
+	return nil
 }
 
-//constructor function for generating cache
-func NewSimpleKVCache() *SimpleKeyValueCache{
-	return &SimpleKeyValueCache{map[string]string{}}
+func (m *MockKeyValueCache) Delete(key string) error{
+	return nil
 }
 
-//per Troy don't need to check for cache here, this is a method of c - it is like "'this'in Java"
+//constructor function for generating test MockCache
+func NewMockSimpleKVCache() *MockKeyValueCache{
+	return &MockKeyValueCache{}
+}
+
+/*working implementation of KVC interface*/
 func (c *SimpleKeyValueCache) Create(key,value string) error{
 
 	//added if statement to match read behavior and logic for empty string
