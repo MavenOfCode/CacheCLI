@@ -16,7 +16,7 @@ var CommandRun = CommandRunner{
 var RootCmd = &cobra.Command{Use:"kvc"}
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Args:  cobra.MinimumNArgs(2),
+	Args:  cobra.ExactArgs(2),
 	Short: "create key-value pair",
 	Long:  "create key value strings into the key-value cache",
 	RunE:   CommandRun.CreateCmd,
@@ -25,14 +25,14 @@ var createCmd = &cobra.Command{
 var readCmd = &cobra.Command{
 	Use:  "read",
 	Short: "read given key and return value",
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.ExactArgs(1),
 	Long: "read value string out to command line from key-value cache given key string input from command line",
 	RunE:  CommandRun.ReadCmd,
 }
 
 var updateCmd = &cobra.Command{
 	Use:  "update",
-	Args: cobra.MinimumNArgs(2),
+	Args: cobra.ExactArgs(2),
 	Short: "update key-value pair",
 	Long:  "update key value strings into the key-value cache",
 	RunE:  CommandRun.UpdateCmd,
@@ -40,7 +40,7 @@ var updateCmd = &cobra.Command{
 
 var deleteCmd = &cobra.Command{
 	Use:  "delete",
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.ExactArgs(1),
 	Short: "delete key-value pair",
 	Long:  "delete key value strings into the key-value cache",
 	RunE: CommandRun.DeleteCmd,

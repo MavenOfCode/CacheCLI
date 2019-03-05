@@ -87,7 +87,7 @@ func TestCreate(t *testing.T) {
 
 
 func TestRead(t *testing.T){
-	t.Run("reads successfully", func(t *testing.T) {
+	t.Run("it reads", func(t *testing.T) {
 		testCache := NewSimpleKVCache()
 		require.NotNil(t, testCache)
 

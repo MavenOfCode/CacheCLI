@@ -22,14 +22,12 @@ func TestCommandRunner_CreateCmd(t *testing.T) {
 	mockCache := NewMockSimpleKVCache()
 	require.NotNil(t, mockCache)
 
-	//testing only create command not create method or kvc
 	t.Run("it creates", func(t *testing.T) {
 		key := "testString"
 		value := "testValueString"
 
 		args := []string{key,value}
 
-		//object literals struct literals
 		commandRun := CommandRunner{cache:mockCache}
 		err := commandRun.CreateCmd(RootCmd, args)
 
@@ -52,7 +50,6 @@ func TestCommandRunner_CreateCmd(t *testing.T) {
 		err := commandRun.CreateCmd(RootCmd, args)
 
 		assert.Equal(t, err.Error(), "create failed: cache not initialized")
-
 	})
 
 	t.Run("create command returns error when one of 2 args missing", func(t *testing.T) {
@@ -63,7 +60,6 @@ func TestCommandRunner_CreateCmd(t *testing.T) {
 		commandRun := CommandRunner{cache:mockCache}
 		err := commandRun.CreateCmd(RootCmd, args)
 		assert.ObjectsAreEqualValues(err, "create failed: insufficient arguments provided")
-
 	})
 
 	t.Run("create command returns error when both args missing", func(t *testing.T) {
@@ -73,7 +69,6 @@ func TestCommandRunner_CreateCmd(t *testing.T) {
 		commandRun := CommandRunner{cache:mockCache}
 		err := commandRun.CreateCmd(RootCmd, args)
 		assert.ObjectsAreEqualValues(err, "create failed: insufficient arguments provided")
-
 	})
 }
 
@@ -84,14 +79,17 @@ func TestCommandRunner_ReadCmd(t *testing.T) {
 
 
 	t.Run("it reads", func(t *testing.T) {
-		ReturnString := "hi"
-
-		args := []string{ReturnString}
+		ReturnString := "ReturnString"
+		Success := "true"
+		args := []string{Success, ReturnString}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.ReadCmd(RootCmd, args)
+		commandRun.CreateCmd(RootCmd, args)
 
-		assert.ObjectsAreEqualValues(err, ReturnString)
+		args2 := []string{Success}
+
+		err := commandRun.ReadCmd(RootCmd, args2)
+		assert.Nil(t,err)
 	})
 
 	t.Run("read command returns error when key is invalid", func(t *testing.T) {
@@ -100,7 +98,6 @@ func TestCommandRunner_ReadCmd(t *testing.T) {
 
 		commandRun := CommandRunner{cache:mockCache}
 		err := commandRun.ReadCmd(RootCmd, args)
-		fmt.Println(err)
 
 		assert.Error(t, err)
 	})
@@ -111,7 +108,6 @@ func TestCommandRunner_ReadCmd(t *testing.T) {
 
 		commandRun := CommandRunner{cache:mockCache}
 		err := commandRun.ReadCmd(RootCmd, args)
-		fmt.Println(err)
 
 		assert.Error(t, err)
 	})
@@ -124,9 +120,8 @@ func TestCommandRunner_ReadCmd(t *testing.T) {
 		err := commandRun.ReadCmd(RootCmd, args)
 		fmt.Println(commandRun)
 
-		assert.Equal(t, err.Error(), "read failed: cache empty - read failed")
+		assert.Error(t, err)
 	})
-
 }
 
 func TestCommandRunner_UpdateCmd(t *testing.T) {
@@ -136,14 +131,15 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 
 	t.Run("it updates", func(t *testing.T) {
 		ReturnString := "ReturnString"
-		value :="hi"
-		args := []string{ReturnString,value}
+		Success := "true"
+		args := []string{Success, ReturnString}
 
 		commandCache := CommandRunner{cache:mockCache}
 		commandCache.CreateCmd(RootCmd,args)
 
-		args2 :=[]string{ReturnString,"bye"}
+		args2 :=[]string{Success,"bye"}
 		err := commandCache.UpdateCmd(RootCmd,args2)
+		fmt.Println(err)
 
 		//mockUpdate returns nil
 		assert.Nil(t, err)
@@ -151,13 +147,19 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 	})
 
 	t.Run("update returns error when invalid key provided", func(t *testing.T) {
+		Success :="false"
+		ReturnString := "ReturnString"
+
+		args := []string{Success,ReturnString}
+
+		commandCache := CommandRunner{cache:mockCache}
+		commandCache.CreateCmd(RootCmd,args)
 
 		key := "key"
-		value := "value"
-		args := []string{key,value}
+		value2 := "value"
+		args2 := []string{key,value2}
+		err := commandCache.UpdateCmd(RootCmd, args2)
 
-		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.UpdateCmd(RootCmd, args)
 		assert.Error(t, err)
 	})
 
@@ -187,6 +189,7 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 
 		commandRun := CommandRunner{cache:mockCache}
 		err := commandRun.UpdateCmd(RootCmd, args)
+		fmt.Println(err)
 		assert.Error(t, err)
 	})
 }
@@ -196,23 +199,31 @@ func TestCommandRunner_DeleteCmd(t *testing.T) {
 	mockCache := NewMockSimpleKVCache()
 	require.NotNil(t, mockCache)
 
-	//t.Run("it deletes", func(t *testing.T) {
-	//	ReturnString := ""
-	//
-	//	args := []string{ReturnString}
-	//
-	//	commandRun := CommandRunner{cache:mockCache}
-	//	//err := commandRun.ReadCmd(RootCmd, args)
-	//
-	//	//assert.ObjectsAreEqualValues(err, ReturnString)
-	//})
+	t.Run("it deletes", func(t *testing.T) {
+		Success := "true"
 
-	t.Run("delete command returns error when key is invalid", func(t *testing.T) {
-		args := []string{"false"}
+		args := []string{Success}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.ReadCmd(RootCmd, args)
-		fmt.Println(err)
+		err := commandRun.DeleteCmd(RootCmd, args)
+
+		assert.Nil(t,err)
+	})
+
+	t.Run("delete command returns error when key is invalid", func(t *testing.T) {
+		args := []string{"betty"}
+
+		commandRun := CommandRunner{cache:mockCache}
+		err := commandRun.DeleteCmd(RootCmd, args)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("delete command returns error when args are insufficient", func(t *testing.T) {
+		args := []string{}
+
+		commandRun := CommandRunner{cache:mockCache}
+		err := commandRun.DeleteCmd(RootCmd, args)
 
 		assert.Error(t, err)
 	})
@@ -221,8 +232,7 @@ func TestCommandRunner_DeleteCmd(t *testing.T) {
 		args := []string{""}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.ReadCmd(RootCmd, args)
-		fmt.Println(err)
+		err := commandRun.DeleteCmd(RootCmd, args)
 
 		assert.Error(t, err)
 	})
@@ -232,9 +242,8 @@ func TestCommandRunner_DeleteCmd(t *testing.T) {
 		args := []string{"false"}
 
 		commandRun := CommandRunner{cache:nil}
-		err := commandRun.ReadCmd(RootCmd, args)
-		fmt.Println(err)
+		err := commandRun.DeleteCmd(RootCmd, args)
 
-		//assert.ObjectsAreEqualValues(err, "delete failed: cache empty - read failed")
+		assert.Error(t,err)
 	})
 }
