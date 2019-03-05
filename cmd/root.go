@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"KVCache/kvcache"
+	"CacheCLI/kvcache"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
