@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"CacheCLI/kvcache"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -10,7 +9,7 @@ import (
 
 func TestCommandRunner_UpdateCmd(t *testing.T) {
 	var RootCmd = &cobra.Command{Use:"kvc"}
-	mockCache := kvcache.NewMockSimpleKVCache()
+	mockCache := NewMockSimpleKVCache()
 	require.NotNil(t, mockCache)
 
 	t.Run("it updates", func(t *testing.T) {
