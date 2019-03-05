@@ -7,11 +7,10 @@ import (
 	"os"
 )
 
-//use constructor from kvcache package for global access to struct and it's private fields
-var cache = kvcache.NewSimpleKVCache()
-
 //use struct CommandRunner to enable running of either Mock or Real commands with Mock or Simple KVCache
-var CommandRun = CommandRunner{cache:cache}
+var CommandRun = CommandRunner{
+	cache: kvcache.NewSimpleKVCache(),
+}
 
 //make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
 var RootCmd = &cobra.Command{Use:"kvc"}
@@ -44,7 +43,7 @@ var deleteCmd = &cobra.Command{
 	Args: cobra.MinimumNArgs(1),
 	Short: "delete key-value pair",
 	Long:  "delete key value strings into the key-value cache",
-	//RunE:
+	RunE: CommandRun.DeleteCmd,
 }
 
 
