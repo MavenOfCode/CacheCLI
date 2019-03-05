@@ -24,7 +24,6 @@ var createCmd = &cobra.Command{
 	RunE:   CommandRun.CreateCmd,
 }
 
-//trying use of minimum args in command to avoid writing RunE function with error to test for args length
 var readCmd = &cobra.Command{
 	Use:  "read",
 	Short: "read given key and return value",
@@ -38,23 +37,7 @@ var updateCmd = &cobra.Command{
 	Args: cobra.MinimumNArgs(2),
 	Short: "update key-value pair",
 	Long:  "update key value strings into the key-value cache",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if cache == nil {
-			return errors.New("cache not initialized - update failed: ")
-		}
-		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Create("name", "harley")
-		cache.Create("animal", "horse")
-		cache.Create("kitten", "Bene")
-		updateResult := cache.Update(args[0],args[1])
-		if updateResult == nil {
-			fmt.Printf("update success:  cache '%v' ", cache)
-			fmt.Println()
-			return nil
-		}
-		fmt.Println(updateResult)
-		return errors.New("")
-	},
+	RunE:  CommandRun.UpdateCmd,
 }
 
 var deleteCmd = &cobra.Command{

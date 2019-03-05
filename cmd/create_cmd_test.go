@@ -24,7 +24,9 @@ func TestCommandRunner_CreateCmd(t *testing.T) {
 		commandRun := CommandRunner{cache:mockCache}
 		err := commandRun.CreateCmd(RootCmd, args)
 
-		assert.NoError(t,err)
+		assert.Nil (t,err, "create works")
+
+		assert.NoError(t,err,"no error generated")
 
 		b, _ := mockCache.Read(key)
 		assert.Equal(t, b, "")

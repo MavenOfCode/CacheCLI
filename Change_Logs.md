@@ -331,4 +331,40 @@ _**NOTE**_ : *`put`* method refactored to *`create`*
      
      srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] 
     ```
+3/4/19 5:11 PM
 
+  -[x] UpdateCmd abstracted away from root.go command file
+  -[x] Unit tests for UpdateCmd pass
+  -[x] Terminal as test harness tests pass for UpdateCmd
+
+    ```srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] go build -o kvc
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book crafty
+       create success:  cache '&{map[name:harley animal:horse kitten:Bene book:crafty]}' 
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book
+       Error: requires at least 2 arg(s), only received 1
+       Usage:
+         kvc create [flags]
+       
+       Flags:
+         -h, --help   help for create
+       
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc update kitten Zuki
+       update success:  cache '&{map[name:harley animal:horse kitten:Zuki]}' 
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read name
+       >> value for key is:  harley
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read 
+       Error: requires at least 1 arg(s), only received 0
+       Usage:
+         kvc read [flags]
+       
+       Flags:
+         -h, --help   help for read
+       
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc update kitten
+       Error: requires at least 2 arg(s), only received 1
+       Usage:
+         kvc update [flags]
+       
+       Flags:
+         -h, --help   help for update
+    ```
