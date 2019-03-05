@@ -50,11 +50,12 @@
    ok  	CacheCLI/kvcache	0.014s
 ```
 
-## CMD:  only 56.2% of statements; 0.013s (3/4/19)
+## CMD: only 56.2% of statements; 0.013s (3/4/19)
 
-## CMD: 84,5% coverage of statements; 0.014s (3/5/19)
+## CMD: 84.5% coverage of statements; 0.014s (3/5/19)
+## 95.2% according to HTML coverage report
    
---__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See [file](cmd/coverage.html)
+--__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See **[file here](cmd/coverage.html)**
 
 ### `go tool cover -func=coverage.out' 
 ```

@@ -54,17 +54,9 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">CacheCLI/cmd/cmd-runner.go (42.9%)</option>
+				<option value="file0">CacheCLI/cmd/cmd-runner.go (95.2%)</option>
 				
-				<option value="file1">CacheCLI/cmd/create-cmd.go (91.7%)</option>
-				
-				<option value="file2">CacheCLI/cmd/delete-cmd.go (0.0%)</option>
-				
-				<option value="file3">CacheCLI/cmd/read-cmd.go (75.0%)</option>
-				
-				<option value="file4">CacheCLI/cmd/root.go (0.0%)</option>
-				
-				<option value="file5">CacheCLI/cmd/update-cmd.go (92.9%)</option>
+				<option value="file1">CacheCLI/cmd/root.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -82,7 +74,10 @@
 
 import (
         "CacheCLI/kvcache"
+        "errors"
         "fmt"
+        "github.com/spf13/cobra"
+        "strconv"
 )
 
 type CommandRunner struct {
@@ -91,148 +86,149 @@ type CommandRunner struct {
 
 /* MockCache struct and implementation of KVC interface for testing of KVC CLI commands */
 type MockKeyValueCache struct{
-        WillFail bool
+        Success bool
         ReturnString string
 }
 
-func (m *MockKeyValueCache) Create(key,value string) error<span class="cov0" title="0">{
+func (m *MockKeyValueCache) Create(key,value string) error<span class="cov8" title="1">{
+        m.Success,_= strconv.ParseBool(key)
+        m.ReturnString = value
         return nil
 }</span>
 
 func (m *MockKeyValueCache) Read(key string) (string,error)<span class="cov8" title="1">{
-        if m.WillFail </span><span class="cov0" title="0">{
+        if m == nil</span><span class="cov0" title="0">{
+                return "", fmt.Errorf("update error: cache empty")
+        }</span>
+        <span class="cov8" title="1">m.Success,_= strconv.ParseBool(key)
+        if m.Success </span><span class="cov8" title="1">{
                 return m.ReturnString, nil
         }</span>
         <span class="cov8" title="1">return "", fmt.Errorf("read error")</span>
 }
 
-func (m *MockKeyValueCache) Update(key, value string) error  <span class="cov0" title="0">{
-        return nil
-}</span>
+func (m *MockKeyValueCache) Update(key, value string) error  <span class="cov8" title="1">{
+        if m == nil</span><span class="cov0" title="0">{
+                return fmt.Errorf("update error: cache empty")
+        }</span>
+        <span class="cov8" title="1">m.Success,_= strconv.ParseBool(key)
+        if m.Success </span><span class="cov8" title="1">{
+                return  nil
+        }</span>
+        <span class="cov8" title="1">return errors.New("update error")</span>
+}
 
-func (m *MockKeyValueCache) Delete(key string) error<span class="cov0" title="0">{
-        return nil
-}</span>
+func (m *MockKeyValueCache) Delete(key string) error<span class="cov8" title="1">{
+        if m == nil</span><span class="cov0" title="0">{
+                return fmt.Errorf("update error: cache empty")
+        }</span>
+        <span class="cov8" title="1">m.Success,_= strconv.ParseBool(key)
+        if m.Success </span><span class="cov8" title="1">{
+                return  nil
+        }</span>
+        <span class="cov8" title="1">return fmt.Errorf("delete error")</span>
+}
 
 //constructor function for generating test MockCache
 func NewMockSimpleKVCache() *MockKeyValueCache<span class="cov8" title="1">{
         return &amp;MockKeyValueCache{}
 }</span>
-</pre>
-		
-		<pre class="file" id="file1" style="display: none">package cmd
 
-import (
-        "errors"
-        "fmt"
-        "github.com/spf13/cobra"
-        _ "github.com/spf13/cobra"
-)
-
+/*Commands for CLI using CommandRunner*/
 func (c *CommandRunner) CreateCmd (cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
-        //pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-        cache.Create("name", "harley")
-        cache.Create("animal", "horse")
-        cache.Create("kitten", "Bene")
 
-        if len(args) &lt; 2</span><span class="cov8" title="1">{
+        if len(args) != 2</span><span class="cov8" title="1">{
                 return errors.New("create failed: insufficient arguments provided")
         }</span>
 
-        <span class="cov8" title="1">if  cache != nil </span><span class="cov8" title="1">{
-                createResult := cache.Create(args[0],args[1])
-                if createResult == nil </span><span class="cov8" title="1">{
-                        fmt.Printf("create success:  cache '%v' ", cache)
+        <span class="cov8" title="1">if  c.cache != nil </span><span class="cov8" title="1">{
+                err := c.cache.Create(args[0],args[1])
+                if err == nil </span><span class="cov8" title="1">{
+                        fmt.Printf("create success:  cache '%v' ", c.cache)
                         fmt.Println()
                         return nil
                 }</span>
         }
-        <span class="cov0" title="0">return errors.New("create failed: cache not initialized")</span>
-}</pre>
-		
-		<pre class="file" id="file2" style="display: none">package cmd
-
-import (
-        "errors"
-        "fmt"
-        "github.com/spf13/cobra"
-)
-
-func (c *CommandRunner) DeleteCmd(cmd *cobra.Command, args []string) error <span class="cov0" title="0">{
-        //pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-        //cache.Create("name", "harley")
-        //cache.Create("animal", "horse")
-        //cache.Create("kitten", "Bene")
-
-        if len(args) &lt; 1 </span><span class="cov0" title="0">{
-                return errors.New("delete failed: at least one argument required ")
-        }</span>
-
-        <span class="cov0" title="0">if cache == nil </span><span class="cov0" title="0">{
-                return errors.New("delete failed: cache not initialized - delete failed")
-        }</span>
-
-        <span class="cov0" title="0">deleteResult := cache.Delete(args[0])
-        if deleteResult == nil </span><span class="cov0" title="0">{
-                fmt.Printf("delete success: cache '%v' ", cache)
-                fmt.Println()
-                return nil
-        }</span>
-        <span class="cov0" title="0">fmt.Println(deleteResult)
-        return errors.New("")</span>
-}</pre>
-		
-		<pre class="file" id="file3" style="display: none">package cmd
-
-import (
-        "errors"
-        "fmt"
-        "github.com/spf13/cobra"
-)
+        <span class="cov8" title="1">return errors.New("create failed: cache not initialized")</span>
+}
 
 func (c *CommandRunner) ReadCmd(cmd *cobra.Command, args []string) error  <span class="cov8" title="1">{
-        //pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-        cache.Create("name", "harley")
-        cache.Create("animal", "horse")
-        cache.Create("kitten", "Bene")
 
-        if len(args) &lt; 1</span><span class="cov8" title="1">{
+        if len(args) != 1</span><span class="cov8" title="1">{
                 return errors.New("read failed: at least one argument required")
         }</span>
 
-        <span class="cov8" title="1">if cache == nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">fmt.Println(c)
+        if c.cache == nil </span><span class="cov8" title="1">{
                 return errors.New("read failed: cache empty - read failed")
         }</span>
 
-        <span class="cov8" title="1">readResult, err := cache.Read(args[0])
+        <span class="cov8" title="1">readResult, err := c.cache.Read(args[0])
         if err !=nil </span><span class="cov8" title="1">{
                 return err
         }</span>
-        <span class="cov0" title="0">fmt.Println("&gt;&gt; value for key is: ", readResult)
+        <span class="cov8" title="1">fmt.Println("&gt;&gt; value for key is: ", readResult)
         return nil</span>
 }
-</pre>
+
+func (c *CommandRunner) UpdateCmd(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+
+        if len(args) != 2</span><span class="cov8" title="1">{
+                return errors.New("update failed: insufficient arguments provided")
+        }</span>
+        <span class="cov8" title="1">if c.cache == nil </span><span class="cov8" title="1">{
+                return errors.New("update failed: cache not initialized ")
+        }</span>
+
+        <span class="cov8" title="1">err := c.cache.Update(args[0],args[1])
+        if err == nil </span><span class="cov8" title="1">{
+                fmt.Printf("update success:  cache '%v' ", c.cache)
+                fmt.Println()
+                return nil
+        }</span>
+        <span class="cov8" title="1">fmt.Println(err)
+        return errors.New("update error")</span>
+}
+
+func (c *CommandRunner) DeleteCmd(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
+
+        if len(args) != 1 </span><span class="cov8" title="1">{
+                return errors.New("delete failed: at least one argument required ")
+        }</span>
+
+        <span class="cov8" title="1">if c.cache == nil </span><span class="cov8" title="1">{
+                return errors.New("delete failed: cache not initialized - delete failed")
+        }</span>
+
+        <span class="cov8" title="1">err := c.cache.Delete(args[0])
+        if err == nil </span><span class="cov8" title="1">{
+                fmt.Printf("delete success: cache '%v' ", c.cache)
+                fmt.Println()
+                return nil
+        }</span>
+        <span class="cov8" title="1">fmt.Println(err)
+        return errors.New("")</span>
+}</pre>
 		
-		<pre class="file" id="file4" style="display: none">package cmd
+		<pre class="file" id="file1" style="display: none">package cmd
 
 import (
-        "KVCache/kvcache"
+        "CacheCLI/kvcache"
         "fmt"
         "github.com/spf13/cobra"
         "os"
 )
 
-//use constructor from kvcache package for global access to struct and it's private fields
-var cache = kvcache.NewSimpleKVCache()
-
 //use struct CommandRunner to enable running of either Mock or Real commands with Mock or Simple KVCache
-var CommandRun = CommandRunner{cache:cache}
+var CommandRun = CommandRunner{
+        cache: kvcache.NewSimpleKVCache(),
+}
 
 //make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
 var RootCmd = &amp;cobra.Command{Use:"kvc"}
 var createCmd = &amp;cobra.Command{
         Use:   "create",
-        Args:  cobra.MinimumNArgs(2),
+        Args:  cobra.ExactArgs(2),
         Short: "create key-value pair",
         Long:  "create key value strings into the key-value cache",
         RunE:   CommandRun.CreateCmd,
@@ -241,14 +237,14 @@ var createCmd = &amp;cobra.Command{
 var readCmd = &amp;cobra.Command{
         Use:  "read",
         Short: "read given key and return value",
-        Args: cobra.MinimumNArgs(1),
+        Args: cobra.ExactArgs(1),
         Long: "read value string out to command line from key-value cache given key string input from command line",
         RunE:  CommandRun.ReadCmd,
 }
 
 var updateCmd = &amp;cobra.Command{
         Use:  "update",
-        Args: cobra.MinimumNArgs(2),
+        Args: cobra.ExactArgs(2),
         Short: "update key-value pair",
         Long:  "update key value strings into the key-value cache",
         RunE:  CommandRun.UpdateCmd,
@@ -256,7 +252,7 @@ var updateCmd = &amp;cobra.Command{
 
 var deleteCmd = &amp;cobra.Command{
         Use:  "delete",
-        Args: cobra.MinimumNArgs(1),
+        Args: cobra.ExactArgs(1),
         Short: "delete key-value pair",
         Long:  "delete key value strings into the key-value cache",
         RunE: CommandRun.DeleteCmd,
@@ -280,36 +276,6 @@ func Execute() <span class="cov0" title="0">{
 }
 
 </pre>
-		
-		<pre class="file" id="file5" style="display: none">package cmd
-
-import (
-        "errors"
-        "fmt"
-        "github.com/spf13/cobra"
-)
-
-func (c *CommandRunner) UpdateCmd(cmd *cobra.Command, args []string) error <span class="cov8" title="1">{
-        ////pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-        cache.Create("name", "harley")
-        cache.Create("animal", "horse")
-        cache.Create("kitten", "Bene")
-        if len(args) &lt; 2</span><span class="cov8" title="1">{
-                return errors.New("update failed: insufficient arguments provided")
-        }</span>
-        <span class="cov8" title="1">if cache == nil </span><span class="cov0" title="0">{
-                return errors.New("update failed: cache not initialized ")
-        }</span>
-
-        <span class="cov8" title="1">updateResult := cache.Update(args[0],args[1])
-        if updateResult == nil </span><span class="cov8" title="1">{
-                fmt.Printf("update success:  cache '%v' ", cache)
-                fmt.Println()
-                return nil
-        }</span>
-        <span class="cov8" title="1">fmt.Println(updateResult)
-        return errors.New("")</span>
-}</pre>
 		
 		</div>
 	</body>
