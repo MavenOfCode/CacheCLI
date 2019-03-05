@@ -271,6 +271,7 @@ _**NOTE**_ : *`put`* method refactored to *`create`*
  -[x] Unit test for MockKVCache pass
  -[x] Unit tests for CreateCommand pass
  -[x] Terminal as test harness tests pass for CreateCommand
+ 
    ```srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] go build -o kvc
       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create good book
       &{map[name:harley animal:horse kitten:Bene]}
@@ -292,5 +293,42 @@ _**NOTE**_ : *`put`* method refactored to *`create`*
         -h, --help   help for create
       
       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] 
-  ```
+    ``` 
+3/4/19 4:18 PM
+
+  -[x] ReadCmd abstracted away from root.go command file
+  -[x] Unit tests for ReadCmd pass
+  -[x] Terminal as test harness tests pass for ReadCmd
   
+    ```srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] go build -o kvc
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book dracula
+     create success:  cache '&{map[name:harley animal:horse kitten:Bene book:dracula]}' 
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read name
+     >> value for key is:  harley
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book
+     Error: requires at least 2 arg(s), only received 1
+     Usage:
+       kvc create [flags]
+     
+     Flags:
+       -h, --help   help for create
+     
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read
+     Error: requires at least 1 arg(s), only received 0
+     Usage:
+       kvc read [flags]
+     
+     Flags:
+       -h, --help   help for read
+     
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read book
+     Error: read failed: key 'book' invalid or cache empty
+     Usage:
+       kvc read [flags]
+     
+     Flags:
+       -h, --help   help for read
+     
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] 
+    ```
+

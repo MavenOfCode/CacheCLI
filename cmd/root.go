@@ -15,7 +15,7 @@ var cache = kvcache.NewSimpleKVCache()
 var CommandRun = CommandRunner{cache:cache}
 
 //make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
-var RootCmd = &cobra.Command{Use:"cli"}
+var RootCmd = &cobra.Command{Use:"kvc"}
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Args:  cobra.MinimumNArgs(2),
@@ -30,7 +30,7 @@ var readCmd = &cobra.Command{
 	Short: "read given key and return value",
 	Args: cobra.MinimumNArgs(1),
 	Long: "read value string out to command line from key-value cache given key string input from command line",
-	//RunE:
+	RunE:  CommandRun.ReadCmd,
 }
 
 var updateCmd = &cobra.Command{

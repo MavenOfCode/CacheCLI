@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-func TestCmdRunner_CreateCmd(t *testing.T) {
-	var RootCmd = &cobra.Command{Use:"cli"}
+func TestCommandRunner_CreateCmd(t *testing.T) {
+	var RootCmd = &cobra.Command{Use:"kvc"}
 	mockCache := kvcache.NewMockSimpleKVCache()
 	require.NotNil(t, mockCache)
 
