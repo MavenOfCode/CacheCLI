@@ -180,7 +180,7 @@ func TestUpdate(t *testing.T){
 		value = "Benny"
 		err := testCache.Update(key, value)
 
-		assert.Equal(t, err, nil)
+		assert.ObjectsAreEqualValues(err, nil)
 
 		_, read := testCache.Read(key)
 		assert.ObjectsAreEqualValues(read, value)

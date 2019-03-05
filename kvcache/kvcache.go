@@ -49,14 +49,14 @@ func (c *SimpleKeyValueCache) Create(key,value string) error{
 func (c *SimpleKeyValueCache) Read(key string) (string,error){
 	err := c.Data[key]
 	if err == ""{
-		return "",fmt.Errorf("read failed: key '%v' invalid or cache empty", key)
+		return "",fmt.Errorf("read failed!: key '%v' invalid or cache empty", key)
 	}
 	return err, nil
 }
 
 func (c *SimpleKeyValueCache) Update(key, value string) error{
 	_, keyExists := c.Data[key]
-	if keyExists == false {
+	if keyExists != false {
 		c.Data[key] = value
 		return nil
 	}
