@@ -1,32 +1,49 @@
 # Testing coverage reports - run via `go test -cover`
 
 
-## KVCache: 91.7% of statements; 0.016s
+## KVCache: 91.7% of statements; 0.016s (3/4/19)
 
+## KVCache: 100% of statements; 0.14s
+
+--__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See **[file here](kvcache/coverage.html)**
+
+### `go tool cover -func=coverage.out`
+
+  ```
+  CacheCLI/kvcache/kvcache.go:21:	NewSimpleKVCache	100.0%
+     CacheCLI/kvcache/kvcache.go:26:	Create			100.0%
+     CacheCLI/kvcache/kvcache.go:46:	Read			100.0%
+     CacheCLI/kvcache/kvcache.go:54:	Update			100.0%
+     CacheCLI/kvcache/kvcache.go:63:	Delete			100.0%
+     total:				(statements)		100.0%
+   ```
+ 
+
+### `go test -v`(verbose)
 ```=== RUN   TestSimpleKeyValueCache
    === RUN   TestSimpleKeyValueCache/it_creates_new_cache
    --- PASS: TestSimpleKeyValueCache (0.00s)
        --- PASS: TestSimpleKeyValueCache/it_creates_new_cache (0.00s)
    === RUN   TestCreate
-   === RUN   TestCreate/creates_and_reads_successfully
-   === RUN   TestCreate/it_creates_successfully
+   === RUN   TestCreate/it_creates
+   === RUN   TestCreate/create_instantiates_cache_when_cache_starts_as_nil
    === RUN   TestCreate/_create_returns_error_when_empty_string_given_as_parameter
    === RUN   TestCreate/_create_returns_error_when_key_already_exists
    bobby
    create failed: key 'name' isn't unique: 
    bobby
    --- PASS: TestCreate (0.00s)
-       --- PASS: TestCreate/creates_and_reads_successfully (0.00s)
-       --- PASS: TestCreate/it_creates_successfully (0.00s)
+       --- PASS: TestCreate/it_creates (0.00s)
+       --- PASS: TestCreate/create_instantiates_cache_when_cache_starts_as_nil (0.00s)
        --- PASS: TestCreate/_create_returns_error_when_empty_string_given_as_parameter (0.00s)
        --- PASS: TestCreate/_create_returns_error_when_key_already_exists (0.00s)
    === RUN   TestRead
-   === RUN   TestRead/reads_successfully
+   === RUN   TestRead/it_reads
    === RUN   TestRead/read_successfully_when_given_different_keys
    === RUN   TestRead/read_returns_error_when_given_empty_string
    === RUN   TestRead/read_returns_error_when_given_invalid_key
    --- PASS: TestRead (0.00s)
-       --- PASS: TestRead/reads_successfully (0.00s)
+       --- PASS: TestRead/it_reads (0.00s)
        --- PASS: TestRead/read_successfully_when_given_different_keys (0.00s)
        --- PASS: TestRead/read_returns_error_when_given_empty_string (0.00s)
        --- PASS: TestRead/read_returns_error_when_given_invalid_key (0.00s)
@@ -47,7 +64,7 @@
        --- PASS: TestDelete/delete_returns_error_when_key_doesn't_exist (0.00s)
        --- PASS: TestDelete/delete_returns_error_when_given_empty_key_string (0.00s)
    PASS
-   ok  	CacheCLI/kvcache	0.014s
+   ok  	CacheCLI/kvcache	0.016s
 ```
 
 ## CMD: only 56.2% of statements; 0.013s (3/4/19)
@@ -57,7 +74,7 @@
    
 --__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See **[file here](cmd/coverage.html)**
 
-### `go tool cover -func=coverage.out' 
+### `go tool cover -func=coverage.out` 
 ```
 ///MOCK METHODS FOR TESTING
 CacheCLI/cmd/cmd-runner.go:21:	Create			100.0%

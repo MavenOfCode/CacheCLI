@@ -24,13 +24,10 @@ func NewSimpleKVCache() *SimpleKeyValueCache{
 
 /*working implementation of KVC interface*/
 func (c *SimpleKeyValueCache) Create(key,value string) error{
-	
-	if c == nil {
-		c.Data[key] = value
-		return nil
-		
-	}
+	if c.Data == nil {
+		return fmt.Errorf("cache does not exist")
 
+	}
 	//added if statement to match read behavior and logic for empty string
 	if key =="" || value =="" {
 		return fmt.Errorf("create failed: check key '%v' and value '%v' parameters  ",key, value)
@@ -40,8 +37,8 @@ func (c *SimpleKeyValueCache) Create(key,value string) error{
 	if _, ok := c.Data[key]; ok {
 		return fmt.Errorf("create failed: key '%v' isn't unique: ", key)
 	}
-	c.Data[key] = value
 
+	c.Data[key] = value
 	return nil
 }
 

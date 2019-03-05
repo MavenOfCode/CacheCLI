@@ -28,9 +28,9 @@ _more soon_
 - More developer stories details coming soon from Scott
 
 ## Instructions to build the CLI
-1. Download both [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
+1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
 
-2. In your terminal, go the the `go/src` directory where the project repo now lives
+2. In your terminal, go to the `go/src` directory where the project repo now lives
 3. Type `go build -o bin/kvc` into the command line of the terminal. This generates the binary executable that will allow you to use the command line interface (CLI)
 
 
@@ -102,6 +102,8 @@ _more soon_
 
 ## See [Change logs](Change_Logs.md) for detailed examples of command behaviors throughtout development 
 
+## See [Test Coverage Reports](TestCoverageReports.md) for details on testing for each package
+
 ## Future state of CLI
 - Include flags for `key` that are `-k` or `-key` and `-v` and `-value` for value
 - Have verbose manual option available with typing in command `man`
@@ -131,6 +133,12 @@ https://github.com/spf13/cobra/pull/817
 - More on flags: https://flaviocopes.com/go-command-line-flags/
 
 - Adjust build creation to help make not pushing up go binary files easier: https://stackoverflow.com/questions/9952061/git-ignore-compiled-google-go
+
+- Go testing - go help commands in terminal
+- Go testing from the golang blog: https://blog.golang.org/cover
+- More on funcs and test within testify/assert - docs - https://godoc.org/github.com/stretchr/testify
+
+
 
 
 #### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)

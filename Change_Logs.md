@@ -369,3 +369,4 @@ _**NOTE**_ : *`put`* method refactored to *`create`*
          -h, --help   help for update
     ```
 
+3/5/19 - all day - updating tests to get to close as 100% coverage as possible in both cmd and kvcache packages. 

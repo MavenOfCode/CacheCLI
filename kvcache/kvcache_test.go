@@ -15,31 +15,27 @@ func TestSimpleKeyValueCache(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	t.Run("creates and reads successfully", func(t *testing.T) {
 
+	t.Run("it creates", func(t *testing.T) {
 		testCache := NewSimpleKVCache()
 		require.NotNil(t, testCache)
+		key := "123"
+		value := "Sooz"
 
-		key := "testKey"
-		value := "testValue"
-		err := testCache.Create(key,value)
+		err := testCache.Create(key, value)
+		assert.NoError(t, err)
 
-		assert.NoError(t,err)
-		b, _ := testCache.Read(key)
-		assert.Equal(t, b, value)
+		a,_ := testCache.Read(key)
+		assert.Equal(t, a, value)
 	})
 
-	t.Run("it creates successfully", func(t *testing.T) {
-		testCache := NewSimpleKVCache()
-		require.NotNil(t, testCache)
+	t.Run("create instantiates cache when cache starts as nil", func(t *testing.T) {
+		testCache := SimpleKeyValueCache{nil}
 		key2 := "123"
 		value2 := "Sooz"
 
-		err2 := testCache.Create(key2, value2)
-		assert.NoError(t, err2)
-
-		a,_ := testCache.Read(key2)
-		assert.Equal(t, a, value2)
+		err := testCache.Create(key2, value2)
+		assert.Error(t, err)
 	})
 
 	//added to align with read error and tests
