@@ -50,7 +50,7 @@ func (c *SimpleKeyValueCache) Read(key string) (string,error){
 
 func (c *SimpleKeyValueCache) Update(key, value string) error{
 	_, keyExists := c.Data[key]
-	if !keyExists {
+	if keyExists {
 		c.Data[key] = value
 		return nil
 	}
