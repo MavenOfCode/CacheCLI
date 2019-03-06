@@ -5,7 +5,7 @@
 
 ## KVCache: 100% of statements; 0.14s
 
---__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See **[file here](kvcache/coverage.html)**
+--__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See readme for full details on how to run your own.
 
 ### `go tool cover -func=coverage.out`
 
@@ -72,7 +72,7 @@
 ## CMD: 84.5% coverage of statements; 0.014s (3/5/19)
 ## 95.2% according to HTML coverage report
    
---__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See **[file here](cmd/coverage.html)**
+--__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See readme for full details on how to run your own.
 
 ### `go tool cover -func=coverage.out` 
 ```

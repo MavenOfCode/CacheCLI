@@ -1,25 +1,27 @@
 package cmd
 
 import (
+	"CacheCLI/kvcache"
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"strconv"
 	"testing"
 )
 
 func TestMockSimpleKeyValueCache (t *testing.T){
 	t.Run("it creates a mock cache", func(t *testing.T) {
-		mockCache := NewMockSimpleKVCache()
+		mockCache := NewMockSimpleKVCache(true, "")
 		assert.NotNil(t, mockCache)
 	})
 }
 
 /*Command Tests using Command Runner with MockSKVC*/
-
 func TestCommandRunner_CreateCmd(t *testing.T) {
 	var RootCmd = &cobra.Command{Use:"kvc"}
-	mockCache := NewMockSimpleKVCache()
+	mockCache := NewMockSimpleKVCache(false, "")
 	require.NotNil(t, mockCache)
 
 	t.Run("it creates", func(t *testing.T) {
@@ -125,8 +127,8 @@ func TestCommandRunner_ReadCmd(t *testing.T) {
 }
 
 func TestCommandRunner_UpdateCmd(t *testing.T) {
-	var RootCmd = &cobra.Command{Use:"kvc"}
-	mockCache := NewMockSimpleKVCache()
+	var rootCmd = &cobra.Command{Use: "kvc"}
+	mockCache := NewMockSimpleKVCache(false, "")
 	require.NotNil(t, mockCache)
 
 	t.Run("it updates", func(t *testing.T) {
@@ -135,15 +137,28 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 		args := []string{Success, ReturnString}
 
 		commandCache := CommandRunner{cache:mockCache}
-		commandCache.CreateCmd(RootCmd,args)
+		_ = commandCache.CreateCmd(rootCmd,args)
 
 		args2 :=[]string{Success,"bye"}
-		err := commandCache.UpdateCmd(RootCmd,args2)
+		err := commandCache.UpdateCmd(rootCmd,args2)
 		fmt.Println(err)
 
 		//mockUpdate returns nil
 		assert.Nil(t, err)
 
+	})
+
+	t.Run("update succeeds", func(t *testing.T) {
+		// arrange
+		expected := "value"
+		cmdRunner := CommandRunner{cache: NewMockSimpleKVCache(true, expected)}
+		args := []string{"key", expected}
+
+		// action
+		res, err := cmdRunner.UpdateCmd(rootCmd, args)
+
+		// assert
+		assert.NoError(t, err)
 	})
 
 	t.Run("update returns error when invalid key provided", func(t *testing.T) {
@@ -153,12 +168,12 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 		args := []string{Success,ReturnString}
 
 		commandCache := CommandRunner{cache:mockCache}
-		commandCache.CreateCmd(RootCmd,args)
+		commandCache.CreateCmd(rootCmd,args)
 
 		key := "key"
 		value2 := "value"
 		args2 := []string{key,value2}
-		err := commandCache.UpdateCmd(RootCmd, args2)
+		err := commandCache.UpdateCmd(rootCmd, args2)
 
 		assert.Error(t, err)
 	})
@@ -169,7 +184,7 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 		args := []string{key,value}
 
 		commandRun := CommandRunner{cache:nil}
-		err := commandRun.UpdateCmd(RootCmd, args)
+		err := commandRun.UpdateCmd(rootCmd, args)
 		assert.Error(t, err)
 	})
 
@@ -178,7 +193,7 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 		args := []string{key}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.UpdateCmd(RootCmd, args)
+		err := commandRun.UpdateCmd(rootCmd, args)
 		assert.Error(t, err)
 	})
 
@@ -188,7 +203,7 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 		args := []string{key,value}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.UpdateCmd(RootCmd, args)
+		err := commandRun.UpdateCmd(rootCmd, args)
 		fmt.Println(err)
 		assert.Error(t, err)
 	})
@@ -247,3 +262,54 @@ func TestCommandRunner_DeleteCmd(t *testing.T) {
 		assert.Error(t,err)
 	})
 }
+
+/* MockCache struct and implementation of KVC interface for testing of KVC CLI commands */
+type MockKeyValueCache struct{
+	Success bool
+	ReturnString string
+}
+
+//constructor function for generating test MockCache
+func NewMockSimpleKVCache(success bool, retString string) kvcache.KeyValueCache {
+	return &MockKeyValueCache{success, retString}
+}
+
+func (m *MockKeyValueCache) Create(key,value string) error{
+	m.Success,_= strconv.ParseBool(key)
+	m.ReturnString = value
+	return nil
+}
+
+func (m *MockKeyValueCache) Read(key string) (string,error){
+	if m == nil{
+		return "", fmt.Errorf("update error: cache empty")
+	}
+	m.Success,_= strconv.ParseBool(key)
+	if m.Success {
+		return m.ReturnString, nil
+	}
+	return "", fmt.Errorf("read error")
+}
+
+func (m *MockKeyValueCache) Update(key, value string) error  {
+	if m == nil{
+		return fmt.Errorf("update error: cache empty")
+	}
+	//m.Success,_= strconv.ParseBool(key)
+	if m.Success {
+		return  nil
+	}
+	return errors.New("update error")
+}
+
+func (m *MockKeyValueCache) Delete(key string) error{
+	if m == nil{
+		return fmt.Errorf("update error: cache empty")
+	}
+	m.Success,_= strconv.ParseBool(key)
+	if m.Success {
+		return  nil
+	}
+	return fmt.Errorf("delete error")
+}
+

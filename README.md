@@ -1,32 +1,5 @@
 # Cache CLI
 
-## Purpose
-- Work with Go
-- Practice writing tests in Go
-- Learn more about structs and interfaces
-- Learn to work with Cobra and other Go libraries
-- Learn about gRPC and how to connect CLI with simple string key-value cache servers like [KeyValueCache](https://github.com/FavoredFortune/KeyValueCache)
-- Grow project over time to add other technologies and achieve other learning goals
-
-## Technologies
-- Go
-- Markdown (MD)
-- Goland (IDE)
-- Stretchr/testify API (github.com/stretchr/testify)
-- Cobra API (https://github.com/spf13/cobra)
-- Flag API (from Go https://golang.org/pkg/flag/)
-_more soon_
-
-## User Stories
-- As a user I want to put in code arguments like `create animal horse` that work with a Go CLI 'client' to take the commands in a terminal and add the values `animal` and `horse` as a `key:value` pair in this `SimpleKeyValueCache` construct
-- As a user I want to type in the command `read animal` to the CLI and have the Go application return `>>horse`
-- As a developer I want unit tests for each method (`Create`, `Read`, `Update`, `Delete`) that prove it works with both good and bad input
-- As a developer I want to use the Cobra library to build the CLI (per Troy Dai)
-* As a developer I want to use the Go Flag library in the CLI (per Troy & Scott)
-- As a developer I want unit tests for each command 
-- As a developer I want integrated tests for the CLI
-- More developer stories details coming soon from Scott
-
 ## Instructions to build the CLI
 1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
 
@@ -47,7 +20,7 @@ _more soon_
     
     *  **delete** followed by a string that will be your `key` to remove the `key-value` pair from your data cache)
 
-## Expected command behaviors
+## Expected CLI command behaviors
 - **`create`** puts a `key` string and a `value` string into a the designed simple value cache struct as a key:value pair
  
   **Looks like this when entered in the terminal:** `./kvc create <key> <value>`
@@ -97,12 +70,48 @@ _more soon_
    * empty string provided as key 
    * key provided doesn't exist in cache
    * key is an empty string
-   
 
+## How to run tests
+
+ 1. Navigate to the package/directory you want to test in your terminal
+ 2. To run the tests and see how each passes type `$ go test -v`
+ 3. To generate a coverage report for the package enter `$go test -cover`
+ 4. To see the coverage report in html follow these steps:
+        
+       1. in terminal `$ go test -coverprofile=coverage.out`
+       2. in terminal `$ go tool cover -html=coverage.out -o coverage.html`
+       3. in IDE right click on `coverage.html` file, choose **open in browser** option
+
+## See [Test Coverage Reports](TestCoverageReports.md) for details on testing for each package
 
 ## See [Change logs](Change_Logs.md) for detailed examples of command behaviors throughtout development 
 
-## See [Test Coverage Reports](TestCoverageReports.md) for details on testing for each package
+## Purpose
+- Work with Go
+- Practice writing tests in Go
+- Learn more about structs and interfaces
+- Learn to work with Cobra and other Go libraries
+- Learn about gRPC and how to connect CLI with simple string key-value cache servers like [KeyValueCache](https://github.com/FavoredFortune/KeyValueCache)
+- Grow project over time to add other technologies and achieve other learning goals
+
+## Technologies
+- Go
+- Markdown (MD)
+- Goland (IDE)
+- Stretchr/testify API (github.com/stretchr/testify)
+- Cobra API (https://github.com/spf13/cobra)
+- Flag API (from Go https://golang.org/pkg/flag/)
+_more soon_
+
+## User Stories
+- As a user I want to put in code arguments like `create animal horse` that work with a Go CLI 'client' to take the commands in a terminal and add the values `animal` and `horse` as a `key:value` pair in this `SimpleKeyValueCache` construct
+- As a user I want to type in the command `read animal` to the CLI and have the Go application return `>>horse`
+- As a developer I want unit tests for each method (`Create`, `Read`, `Update`, `Delete`) that prove it works with both good and bad input
+- As a developer I want to use the Cobra library to build the CLI (per Troy Dai)
+* As a developer I want to use the Go Flag library in the CLI (per Troy & Scott)
+- As a developer I want unit tests for each command 
+- As a developer I want integrated tests for the CLI
+- More developer stories details coming soon from Scott
 
 ## Future state of CLI
 - Include flags for `key` that are `-k` or `-key` and `-v` and `-value` for value

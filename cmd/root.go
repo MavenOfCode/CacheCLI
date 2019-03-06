@@ -19,7 +19,7 @@ var createCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 	Short: "create key-value pair",
 	Long:  "create key value strings into the key-value cache",
-	RunE:   CommandRun.CreateCmd,
+	RunE:   Create,
 }
 
 var readCmd = &cobra.Command{
@@ -61,5 +61,14 @@ func Execute() {
 	RootCmd.AddCommand(updateCmd)
 	RootCmd.AddCommand(deleteCmd)
 	RootCmd.Execute()
+}
+
+func Create(cmd *cobra.Command, args []string) error {
+	res, err := CommandRun.CreateCmd(cmd, args)
+	if err != nil {
+		return err
+	}
+	fmt.Println(res)
+	return nil
 }
 
