@@ -261,4 +261,112 @@ Tests for `update` command in terminal.
 
 3/1/19
 
-_**NOTE**_ : *`put`* method refactored to *`create`* 
+_**NOTE**_ : *`put`* method refactored to *`create`*
+
+3/4/19 3:09 PM
+ 
+ -[x] MockKVCache and associate implementation of Mock methods created in KVCache file
+ -[x] CommandRunner struct created to run either MockKVCache or SimpleKVCache for both test and production implementations of the `kvc` CLI application
+ -[x] CreateCmd abstracted away from root.go command file
+ -[x] Unit test for MockKVCache pass
+ -[x] Unit tests for CreateCommand pass
+ -[x] Terminal as test harness tests pass for CreateCommand
+ 
+   ```srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] go build -o kvc
+      srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create good book
+      &{map[name:harley animal:horse kitten:Bene]}
+      create success:  cache '&{map[name:harley animal:horse kitten:Bene good:book]}' 
+      srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book
+      Error: requires at least 2 arg(s), only received 1
+      Usage:
+        cli create [flags]
+      
+      Flags:
+        -h, --help   help for create
+      
+      srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create
+      Error: requires at least 2 arg(s), only received 0
+      Usage:
+        cli create [flags]
+      
+      Flags:
+        -h, --help   help for create
+      
+      srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] 
+    ``` 
+3/4/19 4:18 PM
+
+  -[x] ReadCmd abstracted away from root.go command file
+  -[x] Unit tests for ReadCmd pass
+  -[x] Terminal as test harness tests pass for ReadCmd
+  
+    ```srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] go build -o kvc
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book dracula
+     create success:  cache '&{map[name:harley animal:horse kitten:Bene book:dracula]}' 
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read name
+     >> value for key is:  harley
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book
+     Error: requires at least 2 arg(s), only received 1
+     Usage:
+       kvc create [flags]
+     
+     Flags:
+       -h, --help   help for create
+     
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read
+     Error: requires at least 1 arg(s), only received 0
+     Usage:
+       kvc read [flags]
+     
+     Flags:
+       -h, --help   help for read
+     
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read book
+     Error: read failed: key 'book' invalid or cache empty
+     Usage:
+       kvc read [flags]
+     
+     Flags:
+       -h, --help   help for read
+     
+     srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] 
+    ```
+3/4/19 5:11 PM
+
+  -[x] UpdateCmd abstracted away from root.go command file
+  -[x] Unit tests for UpdateCmd pass
+  -[x] Terminal as test harness tests pass for UpdateCmd
+
+    ```srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] go build -o kvc
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book crafty
+       create success:  cache '&{map[name:harley animal:horse kitten:Bene book:crafty]}' 
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc create book
+       Error: requires at least 2 arg(s), only received 1
+       Usage:
+         kvc create [flags]
+       
+       Flags:
+         -h, --help   help for create
+       
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc update kitten Zuki
+       update success:  cache '&{map[name:harley animal:horse kitten:Zuki]}' 
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read name
+       >> value for key is:  harley
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc read 
+       Error: requires at least 1 arg(s), only received 0
+       Usage:
+         kvc read [flags]
+       
+       Flags:
+         -h, --help   help for read
+       
+       srichm :~/gocode/src/CacheCLI :[mon-cli-test !?] ./kvc update kitten
+       Error: requires at least 2 arg(s), only received 1
+       Usage:
+         kvc update [flags]
+       
+       Flags:
+         -h, --help   help for update
+    ```
+
+3/5/19 - all day - updating tests to get to close as 100% coverage as possible in both cmd and kvcache packages. 

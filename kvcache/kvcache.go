@@ -6,11 +6,12 @@ import (
 
 //interface for use by all files (public by using cap at start of name)
 type KeyValueCache interface{
-	Put(key, value string) error
+	Create(key, value string) error
 	Read(key string) (string,error)
-	Update(key,value string) error
+	Update(key, value string) error
 	Delete(key string) error
 }
+
 
 type SimpleKeyValueCache struct{
 	Data map[string]string
@@ -21,35 +22,35 @@ func NewSimpleKVCache() *SimpleKeyValueCache{
 	return &SimpleKeyValueCache{map[string]string{}}
 }
 
-//per Troy don't need to check for cache here, this is a method of c - it is like "'this'in Java"
-func (c *SimpleKeyValueCache) Create(key,value string) error{
-
-	//added if statement to match read behavior and logic for empty string
-	if key =="" || value =="" {
-		return fmt.Errorf("create failed: check key '%v' and value '%v' parameters  ",key, value)
+/*working implementation of KVC interface*/
+func (c *SimpleKeyValueCache) Create(key, value string) error{
+	if c.Data == nil {
+		return fmt.Errorf("create failed: cache does not exist")
 	}
 
-	//added to check if key exists and reject put if key does already exist
+	if key == "" || value == "" {
+		return fmt.Errorf("create failed: key '%v' and value '%v' must not be empty strings ",key, value)
+	}
+
 	if _, ok := c.Data[key]; ok {
 		return fmt.Errorf("create failed: key '%v' isn't unique: ", key)
 	}
-	c.Data[key] = value
 
+	c.Data[key] = value
 	return nil
 }
 
-//updated interface and method to return both string and error when realized SKVC wouldn't return an error when an empty string was entered as a key - not cool
 func (c *SimpleKeyValueCache) Read(key string) (string,error){
-	err := c.Data[key]
-	if err == ""{
-		return "",fmt.Errorf("read failed: key '%v' invalid or cache empty", key)
+	result, ok := c.Data[key]
+	if !ok {
+		return "",fmt.Errorf("read failed: key '%v' not in cache", key)
 	}
-	return err, nil
+	return result, nil
 }
 
 func (c *SimpleKeyValueCache) Update(key, value string) error{
 	_, keyExists := c.Data[key]
-	if keyExists == false {
+	if !keyExists {
 		c.Data[key] = value
 		return nil
 	}

@@ -1,111 +1,49 @@
 package cmd
 
 import (
-	"KVCache/kvcache"
-	"errors"
+	"CacheCLI/kvcache"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
 )
 
-//use constructor from kvcache package for global access to struct and it's private fields per Troy
-var cache = kvcache.NewSimpleKVCache()
-
-//make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
-var RootCmd = &cobra.Command{Use:"cli"}
-var createCmd = &cobra.Command{
-	Use:   "create",
-	Args: cobra.MinimumNArgs(2),
-	Short: "create key-value pair",
-	Long:  "create key value strings into the key-value cache",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if cache == nil {
-			return errors.New("cache not initialized - create failed: ")
-		}
-		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Create("name", "harley")
-		cache.Create("animal", "horse")
-		cache.Create("kitten", "Bene")
-
-		createResult := cache.Create(args[0],args[1])
-		if createResult == nil {
-			fmt.Printf("create success:  cache '%v' ", cache)
-			fmt.Println()
-			return nil
-		}
-		return errors.New("create fail")
-	},
+//use struct CommandRunner to enable running of either Mock or Real commands with Mock or Simple KVCache
+var CommandRun = CommandRunner{
+	cache: kvcache.NewSimpleKVCache(),
 }
 
-//trying use of minimum args in command to avoid writing RunE function with error to test for args length
+//make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
+var RootCmd = &cobra.Command{Use:"kvc"}
+var createCmd = &cobra.Command{
+	Use:   "create",
+	Args:  cobra.ExactArgs(2),
+	Short: "create key-value pair",
+	Long:  "create key value strings into the key-value cache",
+	RunE:   Create,
+}
+
 var readCmd = &cobra.Command{
 	Use:  "read",
 	Short: "read given key and return value",
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.ExactArgs(1),
 	Long: "read value string out to command line from key-value cache given key string input from command line",
-	RunE: func(cmd *cobra.Command, args []string) error  {
-		if cache == nil {
-			return errors.New("cache empty - read failed: ")
-		}
-		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Create("name", "harley")
-		cache.Create("animal", "horse")
-		cache.Create("kitten", "Bene")
-		readResult, err := cache.Read(args[0])
-		if err !=nil {
-			return err
-		}
-		fmt.Println(">> value for key is: ", readResult)
-		return nil
-	},
+	RunE:  CommandRun.ReadCmd,
 }
 
 var updateCmd = &cobra.Command{
 	Use:  "update",
-	Args: cobra.MinimumNArgs(2),
+	Args: cobra.ExactArgs(2),
 	Short: "update key-value pair",
 	Long:  "update key value strings into the key-value cache",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if cache == nil {
-			return errors.New("cache not initialized - update failed: ")
-		}
-		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Create("name", "harley")
-		cache.Create("animal", "horse")
-		cache.Create("kitten", "Bene")
-		updateResult := cache.Update(args[0],args[1])
-		if updateResult == nil {
-			fmt.Printf("update success:  cache '%v' ", cache)
-			fmt.Println()
-			return nil
-		}
-		fmt.Println(updateResult)
-		return errors.New("")
-	},
+	RunE:  CommandRun.UpdateCmd,
 }
 
 var deleteCmd = &cobra.Command{
 	Use:  "delete",
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.ExactArgs(1),
 	Short: "delete key-value pair",
 	Long:  "delete key value strings into the key-value cache",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if cache == nil {
-			return errors.New("cache not initialized - delete failed: ")
-		}
-		//pre-seeding cache for read command for now since cache won't persist until CLI/Cache connection built
-		cache.Create("name", "harley")
-		cache.Create("animal", "horse")
-		cache.Create("kitten", "Bene")
-		deleteResult := cache.Delete(args[0])
-		if deleteResult == nil {
-			fmt.Printf("delete success: cache '%v' ", cache)
-			fmt.Println()
-			return nil
-		}
-		fmt.Println(deleteResult)
-		return errors.New("")
-	},
+	RunE: CommandRun.DeleteCmd,
 }
 
 
@@ -123,5 +61,14 @@ func Execute() {
 	RootCmd.AddCommand(updateCmd)
 	RootCmd.AddCommand(deleteCmd)
 	RootCmd.Execute()
+}
+
+func Create(cmd *cobra.Command, args []string) error {
+	res, err := CommandRun.CreateCmd(cmd, args)
+	if err != nil {
+		return err
+	}
+	fmt.Println(res)
+	return nil
 }
 
