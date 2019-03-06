@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"CacheCLI/kvcache"
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
@@ -9,6 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"strconv"
 	"testing"
+	
+	"CacheCLI/kvcache"
 )
 
 func TestMockSimpleKeyValueCache (t *testing.T){
