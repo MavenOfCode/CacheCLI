@@ -25,7 +25,7 @@ func (c *CommandRunner) CreateCmd(cmd *cobra.Command, args []string) (string, er
 		}
 		return "", fmt.Errorf("create failed: '%v' ", err)
 	}
-	return "", fmt.Errorf("create failed: cache not initialized")
+	return "", fmt.Errorf("create failed: cache is nil")
 }
 
 func (c *CommandRunner) ReadCmd(cmd *cobra.Command, args []string) (string, error) {
@@ -56,7 +56,6 @@ func (c *CommandRunner) UpdateCmd(cmd *cobra.Command, args []string) (string, er
 	
 	err := c.cache.Update(args[0], args[1])
 	if err == nil {
-		//fmt.Printf("update success: cache '%v' \n", c.cache)
 		res := fmt.Sprintf("update success: cache '%v' \n", c.cache)
 		return res, nil
 	}

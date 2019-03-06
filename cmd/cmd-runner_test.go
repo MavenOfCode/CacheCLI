@@ -26,33 +26,33 @@ func TestCommandRunner_CreateCmd(t *testing.T) {
 	require.NotNil(t, mockCache)
 
 	t.Run("it creates", func(t *testing.T) {
-		key := "testString"
+		key := "true"
 		value := "testValueString"
 
 		args := []string{key,value}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.CreateCmd(RootCmd, args)
+		res, err := commandRun.CreateCmd(RootCmd, args)
 
-		assert.Nil (t,err, "create works")
-
-		assert.NoError(t,err,"no error generated")
+		assert.Nil (t, err,)
+		assert.NotNil(t,res)
 
 		b, _ := mockCache.Read(key)
-		assert.Equal(t, b, "")
+		assert.Equal(t, b, value)
 	})
 
 	t.Run("create command returns error when cache is nil", func(t *testing.T) {
 
-		key := "keyTest"
+		key := "true"
 		value := "testValueString"
 
 		args := []string{key,value}
 
 		commandRun := CommandRunner{cache:nil}
-		err := commandRun.CreateCmd(RootCmd, args)
-
-		assert.Equal(t, err.Error(), "create failed: cache not initialized")
+		res, err := commandRun.CreateCmd(RootCmd, args)
+		
+		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 
 	t.Run("create command returns error when one of 2 args missing", func(t *testing.T) {
@@ -61,23 +61,39 @@ func TestCommandRunner_CreateCmd(t *testing.T) {
 		args := []string{key}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.CreateCmd(RootCmd, args)
-		assert.ObjectsAreEqualValues(err, "create failed: insufficient arguments provided")
+		res, err := commandRun.CreateCmd(RootCmd, args)
+		
+		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
+	
+	t.Run("create command returns error when key arg is missing", func(t *testing.T) {
+		value := "return"
+		args := []string{value}
+		
+		commandRun := CommandRunner{cache:mockCache}
+		res, err := commandRun.CreateCmd(RootCmd, args)
+		
+		assert.Error(t, err)
+		assert.Equal(t, res, "")
+	})
+	
+	t.Run("create command returns error when value arg is missing", func(t *testing.T) {
 
-	t.Run("create command returns error when both args missing", func(t *testing.T) {
-
-		args := []string{}
+		key := "true"
+		args := []string{key}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.CreateCmd(RootCmd, args)
-		assert.ObjectsAreEqualValues(err, "create failed: insufficient arguments provided")
+		res, err := commandRun.CreateCmd(RootCmd, args)
+		
+		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 }
 
 func TestCommandRunner_ReadCmd(t *testing.T) {
 	var RootCmd = &cobra.Command{Use:"kvc"}
-	mockCache := NewMockSimpleKVCache()
+	mockCache := NewMockSimpleKVCache(false, "")
 	require.NotNil(t, mockCache)
 
 
@@ -87,12 +103,14 @@ func TestCommandRunner_ReadCmd(t *testing.T) {
 		args := []string{Success, ReturnString}
 
 		commandRun := CommandRunner{cache:mockCache}
-		commandRun.CreateCmd(RootCmd, args)
+		_, _ = commandRun.CreateCmd(RootCmd, args)
 
 		args2 := []string{Success}
 
-		err := commandRun.ReadCmd(RootCmd, args2)
-		assert.Nil(t,err)
+		res, err := commandRun.ReadCmd(RootCmd, args2)
+		
+		assert.Nil (t, err,)
+		assert.NotNil(t,res)
 	})
 
 	t.Run("read command returns error when key is invalid", func(t *testing.T) {
@@ -100,9 +118,10 @@ func TestCommandRunner_ReadCmd(t *testing.T) {
 		args := []string{"false"}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.ReadCmd(RootCmd, args)
-
+		res, err := commandRun.ReadCmd(RootCmd, args)
+		
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 
 	t.Run("read command returns error when args are insufficient", func(t *testing.T) {
@@ -110,9 +129,10 @@ func TestCommandRunner_ReadCmd(t *testing.T) {
 		args := []string{}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.ReadCmd(RootCmd, args)
-
+		res, err := commandRun.ReadCmd(RootCmd, args)
+		
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 
 	t.Run("read command returns error when cache is nil ", func(t *testing.T) {
@@ -120,10 +140,10 @@ func TestCommandRunner_ReadCmd(t *testing.T) {
 		args := []string{"false"}
 
 		commandRun := CommandRunner{}
-		err := commandRun.ReadCmd(RootCmd, args)
-		fmt.Println(commandRun)
-
+		res, err := commandRun.ReadCmd(RootCmd, args)
+		
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 }
 
@@ -138,28 +158,15 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 		args := []string{Success, ReturnString}
 
 		commandCache := CommandRunner{cache:mockCache}
-		_ = commandCache.CreateCmd(rootCmd,args)
+		_, _ = commandCache.CreateCmd(rootCmd,args)
 
 		args2 :=[]string{Success,"bye"}
-		err := commandCache.UpdateCmd(rootCmd,args2)
-		fmt.Println(err)
-
+		res, err := commandCache.UpdateCmd(rootCmd,args2)
+		
 		//mockUpdate returns nil
 		assert.Nil(t, err)
+		assert.NotNil(t, res)
 
-	})
-
-	t.Run("update succeeds", func(t *testing.T) {
-		// arrange
-		expected := "value"
-		cmdRunner := CommandRunner{cache: NewMockSimpleKVCache(true, expected)}
-		args := []string{"key", expected}
-
-		// action
-		res, err := cmdRunner.UpdateCmd(rootCmd, args)
-
-		// assert
-		assert.NoError(t, err)
 	})
 
 	t.Run("update returns error when invalid key provided", func(t *testing.T) {
@@ -169,33 +176,38 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 		args := []string{Success,ReturnString}
 
 		commandCache := CommandRunner{cache:mockCache}
-		commandCache.CreateCmd(rootCmd,args)
+		_, _ = commandCache.CreateCmd(rootCmd,args)
 
-		key := "key"
-		value2 := "value"
-		args2 := []string{key,value2}
-		err := commandCache.UpdateCmd(rootCmd, args2)
+		Success = "key"
+		ReturnString = "value"
+		args2 := []string{Success,ReturnString}
+		res, err := commandCache.UpdateCmd(rootCmd, args2)
 
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 
 	t.Run("update returns error when cache is nil", func(t *testing.T) {
-		key := "key"
+		key := "true"
 		value := "value"
 		args := []string{key,value}
 
 		commandRun := CommandRunner{cache:nil}
-		err := commandRun.UpdateCmd(rootCmd, args)
+		res, err := commandRun.UpdateCmd(rootCmd, args)
+		
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 
-	t.Run("update returns error when min args aren't provided", func(t *testing.T) {
+	t.Run("update returns error when required args aren't provided", func(t *testing.T) {
 		key := "key"
 		args := []string{key}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.UpdateCmd(rootCmd, args)
+		res, err := commandRun.UpdateCmd(rootCmd, args)
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
+		
 	})
 
 	t.Run("update returns error when key is empty string", func(t *testing.T) {
@@ -204,15 +216,15 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 		args := []string{key,value}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.UpdateCmd(rootCmd, args)
-		fmt.Println(err)
+		res, err := commandRun.UpdateCmd(rootCmd, args)
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 }
 
 func TestCommandRunner_DeleteCmd(t *testing.T) {
 	var RootCmd = &cobra.Command{Use:"kvc"}
-	mockCache := NewMockSimpleKVCache()
+	mockCache := NewMockSimpleKVCache(false,"returnString")
 	require.NotNil(t, mockCache)
 
 	t.Run("it deletes", func(t *testing.T) {
@@ -221,36 +233,40 @@ func TestCommandRunner_DeleteCmd(t *testing.T) {
 		args := []string{Success}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.DeleteCmd(RootCmd, args)
+		res, err := commandRun.DeleteCmd(RootCmd, args)
 
 		assert.Nil(t,err)
+		assert.NotNil(t, res)
 	})
 
-	t.Run("delete command returns error when key is invalid", func(t *testing.T) {
+	t.Run("delete command returns error when key is does not exist in cache", func(t *testing.T) {
 		args := []string{"betty"}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.DeleteCmd(RootCmd, args)
-
+		res, err := commandRun.DeleteCmd(RootCmd, args)
+		
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 
-	t.Run("delete command returns error when args are insufficient", func(t *testing.T) {
+	t.Run("delete command returns error when args do not equal one", func(t *testing.T) {
 		args := []string{}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.DeleteCmd(RootCmd, args)
-
+		res, err := commandRun.DeleteCmd(RootCmd, args)
+		
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 
 	t.Run("delete command returns error when key is empty string", func(t *testing.T) {
 		args := []string{""}
 
 		commandRun := CommandRunner{cache:mockCache}
-		err := commandRun.DeleteCmd(RootCmd, args)
-
+		res, err := commandRun.DeleteCmd(RootCmd, args)
+		
 		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 
 	t.Run("delete command returns error when cache is nil ", func(t *testing.T) {
@@ -258,9 +274,10 @@ func TestCommandRunner_DeleteCmd(t *testing.T) {
 		args := []string{"false"}
 
 		commandRun := CommandRunner{cache:nil}
-		err := commandRun.DeleteCmd(RootCmd, args)
-
-		assert.Error(t,err)
+		res, err := commandRun.DeleteCmd(RootCmd, args)
+		
+		assert.Error(t, err)
+		assert.Equal(t, res, "")
 	})
 }
 
