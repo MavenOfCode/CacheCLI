@@ -1,9 +1,7 @@
 package server
 
 import (
-	"code.uber.internal/sooz/key-value/.tmp/.go/goroot/src/go/doc/testdata"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -11,8 +9,24 @@ import (
 	"CacheCLI/kvcache"
 )
 
+//JSON literal and object for server to take in and return as needed
+type Data struct {
+	key string `json:"key"`
+	value string`json:"value"`
+}
 
-func Put(w http.ResponseWriter, r *http.Request){
+//object that implements the handler methods
+//has a port member to listen to a port
+//has access to the KVC for a long running process
+//has access to the JSON object for parsing in/out data as requested by the client
+type Server struct {
+	port string
+	cache kvcache.KeyValueCache
+	Data Data
+}
+
+
+func (s *Server) Put(w http.ResponseWriter, r *http.Request){
     var simpleKeyValueCache kvcache.SimpleKeyValueCache
 	
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -32,7 +46,8 @@ func Put(w http.ResponseWriter, r *http.Request){
 			panic(err)
 		}
 	}
-	skvc := kvcache.NewSimpleKVCache(simpleKeyValueCache)
+	//pass encoded json to cache for storage
+	skvc := simpleKeyValueCache.Create()
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(skvc); err !=nil{
