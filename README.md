@@ -153,8 +153,8 @@ https://github.com/spf13/cobra/pull/817
 - Go testing from the golang blog: https://blog.golang.org/cover
 - More on funcs and test within testify/assert - docs - https://godoc.org/github.com/stretchr/testify
 
-
-
+- CLI Client/Server API design https://thenewstack.io/make-a-restful-json-api-go/ with https://github.com/corylanou/tns-restful-json-api/tree/master/v9 Project as reference
+- Server design articles: https://hackernoon.com/restful-api-design-step-by-step-guide-2f2c9f9fcdbf and https://medium.com/hashmapinc/rest-good-practices-for-api-design-881439796dc9
 
 #### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)
 - See [this project](https://github.com/FavoredFortune/CobraCLI) example CLI application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)

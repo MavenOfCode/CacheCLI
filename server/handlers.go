@@ -22,6 +22,7 @@ type Data struct {
 type Server struct {
 	port string
 	cache kvcache.KeyValueCache
+	Routes Route
 	Data Data
 }
 
@@ -56,6 +57,106 @@ func (s *Server) Put(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(simpleKVC); err !=nil{
+		panic(err)
+	}
+}
+
+func (s *Server) Get(w http.ResponseWriter, r *http.Request){
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	//if request is empty error out
+	if err != nil {
+		panic(err)
+	}
+	//if request body is empty error out
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+	//transform request to json; if json is not correctly configured error out
+	if err := json.Unmarshal(body, &data); err !=nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(422)//unprocessable entity (json failed)
+		if err := json.NewEncoder(w).Encode(err); err !=nil {
+			panic(err)
+		}
+	}
+	//pass encoded json to cache for request of data to return
+	simpleKVC, err := s.cache.Read(data.key)
+	//if Read returns error return not found status from server to client
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusNotFound)
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			panic(err)
+		}
+	}
+	//if Read returns string (and error not nil) then encode response for return to client
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusAccepted)
+	if err := json.NewEncoder(w).Encode(simpleKVC); err != nil {
+		panic(err)
+	}
+}
+
+func (s *Server) Post(w http.ResponseWriter, r *http.Request){
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	//if request is empty error out
+	if err != nil {
+		panic(err)
+	}
+	//if request body is empty error out
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+	//transform request to json; if json is not correctly configured error out
+	if err := json.Unmarshal(body, &data); err !=nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(422)//unprocessable entity (json failed)
+		if err := json.NewEncoder(w).Encode(err); err !=nil {
+			panic(err)
+		}
+	}
+	//pass encoded json to cache for storage update
+	updateKVC := s.cache.Update(data.key, data.value)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusCreated)
+	if err := json.NewEncoder(w).Encode(updateKVC); err !=nil{
+		panic(err)
+	}
+}
+
+
+func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	//if request is empty error out
+	if err != nil {
+		panic(err)
+	}
+	//if request body is empty error out
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+	//transform request to json; if json is not correctly configured error out
+	if err := json.Unmarshal(body, &data); err !=nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(422)//unprocessable entity (json failed)
+		if err := json.NewEncoder(w).Encode(err); err !=nil {
+			panic(err)
+		}
+	}
+	//pass encoded json to cache for request of data to return
+	deleteKVC := s.cache.Delete(data.key)
+	//if Delete returns error return not found status from server to client
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusNotFound)
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			panic(err)
+		}
+	}
+	//if Read returns string (and error not nil) then encode response for return to client
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusAccepted)
+	if err := json.NewEncoder(w).Encode(deleteKVC); err != nil {
 		panic(err)
 	}
 }
