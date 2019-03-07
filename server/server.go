@@ -2,8 +2,10 @@ package server
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	
 	"CacheCLI/kvcache"
@@ -18,12 +20,53 @@ type Data struct {
 //object that implements the handler methods
 //has a port member to listen to a port
 //has access to the KVC for a long running process
-//has access to the JSON object for parsing in/out data as requested by the client
 type Server struct {
 	port string
 	cache kvcache.KeyValueCache
-	Routes Route
-	Data Data
+	router mux.Router
+}
+
+func StartServer(port string) {
+	server := &Server{port:port, cache:kvcache.NewSimpleKVCache()}
+	
+	//moved all router construction components inside this constructor so it can access the server instance and its
+	// methods
+	routes := Routes{
+		Route{
+			"PUT",
+			"/PUT",
+			server.Put,
+		},
+		Route{
+			"POST",
+			"/POST",
+			server.Post,
+		},
+		Route{
+			"GET",
+			"/GET",
+			server.Get,
+		},
+		Route{
+			"DELETE",
+			"/DELETE",
+			server.Delete,
+		},
+	}
+	
+	router := mux.NewRouter().StrictSlash(true)
+	for _,route := range routes{
+		var handler http.Handler
+		
+		handler = route.HandlerFuc
+		//put logger here later when I get to that
+		
+		router.
+			Methods(route.Method).
+			Path(route.URI).
+			Handler(handler)
+	}
+	log.Fatal(http.ListenAndServe(port, router))
 }
 
 //not sure I need this, but might for testing so keeping for now
@@ -32,9 +75,10 @@ func NewData(key, value string) *Data{
 	return &Data{key, value}
 }
 
-var data = Data{}
 
-func (s *Server) Put(w http.ResponseWriter, r *http.Request){
+
+func (s * Server) Put(w http.ResponseWriter, r *http.Request){
+	var data = Data{}
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	//if request is empty error out
 	if err != nil {
@@ -62,6 +106,7 @@ func (s *Server) Put(w http.ResponseWriter, r *http.Request){
 }
 
 func (s *Server) Get(w http.ResponseWriter, r *http.Request){
+	var data = Data{}
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	//if request is empty error out
 	if err != nil {
@@ -98,6 +143,7 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 }
 
 func (s *Server) Post(w http.ResponseWriter, r *http.Request){
+	var data = Data{}
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	//if request is empty error out
 	if err != nil {
@@ -126,6 +172,7 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 
 
 func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
+	var data = Data{}
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	//if request is empty error out
 	if err != nil {
