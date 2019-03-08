@@ -1,7 +1,6 @@
 package kvcache
 
 import (
-	"KVCache/kvcache"
 	"fmt"
 	"strconv"
 )
@@ -22,7 +21,7 @@ func (m *MockKeyValueCache) Put(key, value string) error {
 }
 
 //constructor function for generating test MockCache
-func NewMockSimpleKVCache(success bool, retString string) kvcache.KeyValueCache {
+func NewMockSimpleKVCache(success bool, retString string) KeyValueCache {
 	return &MockKeyValueCache{success, retString}
 }
 
