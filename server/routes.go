@@ -8,27 +8,6 @@ type Route struct {
 	HandlerFuc  http.HandlerFunc
 }
 
+
 type Routes []Route
 
-var routes = Routes{
-	Route{
-		"PUT",
-		"/PUT",
-		Put,
-	},
-	Route{
-		"POST",
-		"/POST",
-		Post,
-	},
-	Route{
-		"GET",
-		"/GET",
-		Get,
-	},
-	Route{
-		"DELETE",
-		"/DELETE",
-		Delete,
-	},
-}

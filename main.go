@@ -18,10 +18,12 @@ import (
 	_ "github.com/spf13/cobra"
 	
 	"CacheCLI/cmd"
+	"CacheCLI/server"
 )
 
 func main() {
 	cmd.Execute()
+	server.StartServer("8080")
 }
 
 

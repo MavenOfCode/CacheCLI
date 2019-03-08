@@ -12,13 +12,10 @@ type KeyValueCache interface{
 	Delete(key string) error
 }
 
-//added JSON literal for server to receive/send
-type SimpleKeyValueCache struct{
-	Data map[string]string     `json:"data"`
-}
 
-//added type for server's use
-type SimpleKeyValueCaches SimpleKeyValueCache
+type SimpleKeyValueCache struct{
+	Data map[string]string
+}
 
 //constructor function for generating cache
 func NewSimpleKVCache() *SimpleKeyValueCache{
