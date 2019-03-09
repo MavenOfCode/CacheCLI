@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
@@ -17,13 +18,15 @@ type Data struct {
 	value string`json:"value"`
 }
 
+//func (d *Data) Read()
+
 //object that implements the handler methods
 //has a port member to listen to a port
 //has access to the KVC for a long running process
 type Server struct {
 	port string
 	cache kvcache.KeyValueCache
-	router mux.Router
+	router *mux.Router
 }
 
 func StartServer(port string) {
@@ -75,18 +78,19 @@ func NewData(key, value string) *Data{
 	return &Data{key, value}
 }
 
-
-
 func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 	var data = Data{}
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	fmt.Println(body, err)
 	//if request is empty error out
 	if err != nil {
-		panic(err)
+		w.WriteHeader(401)
+		return
 	}
-	//if request body is empty error out
+	//if request body is closed without content error out
 	if err := r.Body.Close(); err != nil {
-		panic(err)
+		w.WriteHeader(401)
+		return
 	}
 	//transform request to json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
@@ -98,10 +102,16 @@ func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 	}
 	//pass encoded json to cache for storage
 	simpleKVC := s.cache.Create(data.key, data.value)
+	confirmKVC, _ := s.cache.Read(data.key)
+	fmt.Print(confirmKVC)
+	
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(simpleKVC); err !=nil{
-		panic(err)
+		fmt.Print(err)
+		fmt.Print(r.Body)
+	
+		return
 	}
 }
 
@@ -169,7 +179,6 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 		panic(err)
 	}
 }
-
 
 func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
 	var data = Data{}

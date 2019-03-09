@@ -37,6 +37,7 @@ func (c *SimpleKeyValueCache) Create(key, value string) error{
 	}
 
 	c.Data[key] = value
+	fmt.Print(c)
 	return nil
 }
 
