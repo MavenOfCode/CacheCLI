@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
@@ -28,6 +27,9 @@ type Server struct {
 	cache kvcache.KeyValueCache
 	router *mux.Router
 }
+
+ var headerTypeKey = "Content-Type"
+ var headerValue = "application/json; charset=UTF-8"
 
 func StartServer(port string) {
 	server := &Server{port:port, cache:kvcache.NewSimpleKVCache()}
@@ -81,38 +83,33 @@ func NewData(key, value string) *Data{
 func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 	var data = Data{}
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	fmt.Println(body, err)
-	//if request is empty error out
+	//if body is empty error out
 	if err != nil {
-		w.WriteHeader(401)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Status: ", "http.StatusBadRequest")
 		return
 	}
 	//if request body is closed without content error out
 	if err := r.Body.Close(); err != nil {
-		w.WriteHeader(401)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	//transform request to json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422)//unprocessable entity (json failed)
-		if err := json.NewEncoder(w).Encode(err); err !=nil {
-			panic(err)
-		}
-	}
-	//pass encoded json to cache for storage
-	simpleKVC := s.cache.Create(data.key, data.value)
-	confirmKVC, _ := s.cache.Read(data.key)
-	fmt.Print(confirmKVC)
-	
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(simpleKVC); err !=nil{
-		fmt.Print(err)
-		fmt.Print(r.Body)
-	
+		w.Header().Set(headerTypeKey, headerValue )
+		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
 		return
 	}
+	//pass encoded json to cache for storage
+	err = s.cache.Create(data.key, data.value)
+	if err !=nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	
+	w.Header().Set(headerTypeKey, headerValue)
+	w.WriteHeader(http.StatusCreated)
+	return
 }
 
 func (s *Server) Get(w http.ResponseWriter, r *http.Request){
@@ -120,18 +117,23 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	//if request is empty error out
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Status: ", "http.StatusBadRequest")
+		return
 	}
 	//if request body is empty error out
 	if err := r.Body.Close(); err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Status: ", "http.StatusBadRequest")
+		return
+
 	}
 	//transform request to json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422)//unprocessable entity (json failed)
+		w.Header().Set(headerTypeKey, headerValue)
+		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
 		if err := json.NewEncoder(w).Encode(err); err !=nil {
-			panic(err)
+		
 		}
 	}
 	//pass encoded json to cache for request of data to return
@@ -141,7 +143,7 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(http.StatusNotFound)
 		if err := json.NewEncoder(w).Encode(err); err != nil {
-			panic(err)
+			w.Header().Set(headerTypeKey, headerValue)
 		}
 	}
 	//if Read returns string (and error not nil) then encode response for return to client
