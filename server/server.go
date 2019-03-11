@@ -152,27 +152,29 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	//if request is empty error out
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	//if request body is empty error out
 	if err := r.Body.Close(); err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	//transform request to json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422)//unprocessable entity (json failed)
-		if err := json.NewEncoder(w).Encode(err); err !=nil {
-			panic(err)
-		}
+		w.Header().Set(headerTypeKey, headerValue)
+		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
+		return
 	}
 	//pass encoded json to cache for storage update
-	updateKVC := s.cache.Update(data.Key, data.Value)
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(updateKVC); err !=nil{
-		panic(err)
+	err = s.cache.Update(data.Key, data.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
+	w.Header().Set(headerTypeKey,headerValue)
+	w.WriteHeader(http.StatusCreated)
+	return
 }
 
 func (s *Server) Delete(w http.ResponseWriter, r *http.Request){

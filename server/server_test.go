@@ -11,7 +11,14 @@ import (
 	
 	"CacheCLI/kvcache"
 )
- 
+
+
+func TestNewServerTestKeyValueCache(t *testing.T){
+	t.Run("it creates a new mock server cache", func(t *testing.T) {
+		testServerCache := NewServerTestKeyValueCache("key", "value");
+		assert.NotNil(t, testServerCache)
+	})
+}
 func TestServer_Put(t *testing.T) {
 	
 	mockCache := NewServerTestKeyValueCache("testKey", "testValue")
@@ -78,6 +85,39 @@ func TestServer_Get(t *testing.T) {
 	})
 }
 
+func TestServer_Post(t *testing.T){
+	mockCache := NewServerTestKeyValueCache("testKey", "testValue")
+	server := &Server{"8080", mockCache, nil}
+	
+	t.Run("post works", func(t *testing.T) {
+		req, err := http.NewRequest("POST", "/", strings.NewReader(`{"key": "testKey","value": "fooBar"}`))
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Post(rr, req)
+		assert.Equal(t, rr.Code, http.StatusCreated)
+	})
+	
+	t.Run("post returns error when key doesn't exist in cache", func(t *testing.T) {
+		req, err := http.NewRequest("POST", "/", strings.NewReader(`{"key": "zuperTrooper","value": "fooBar"}`))
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Post(rr, req)
+		assert.Equal(t, rr.Code, http.StatusBadRequest)
+	})
+	
+	t.Run("post returns error when JSON MALFORMED", func(t *testing.T) {
+		req, err := http.NewRequest("POST", "/", strings.NewReader(`MALFORMED JSON`))
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Post(rr, req)
+		assert.Equal(t, rr.Code, http.StatusUnprocessableEntity)
+		
+	})
+}
+
 
 /*Mock Cache structure specifically to test Server handler function implementation*/
 
@@ -98,13 +138,13 @@ func (st *ServerTestKeyValueCache) Create(key, value string) error {
 
 func (st *ServerTestKeyValueCache) Read(key string) (string, error) {
 	if st == nil {
-		return "", fmt.Errorf("update error: cache empty")
+		return "", fmt.Errorf("read error: cache empty")
 	}
 	if key == ""{
 		return "", fmt.Errorf("read error: key is empty")
 	}
 	if key != st.Key {
-		return "", fmt.Errorf("read error: key is empty")
+		return "", fmt.Errorf("read error: key not in cache")
 	}
 	return st.Value, nil
 	
@@ -113,6 +153,12 @@ func (st *ServerTestKeyValueCache) Read(key string) (string, error) {
 func (st *ServerTestKeyValueCache) Update(key, value string) error {
 	if st == nil {
 		return fmt.Errorf("update error: cache empty")
+	}
+	if key == "" || value == ""{
+		return fmt.Errorf("update error: key or value is empty")
+	}
+	if key != st.Key {
+		return fmt.Errorf("update error: key is not in cache")
 	}
 	st.Key = key
 	st.Value  = value
