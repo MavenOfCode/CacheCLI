@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
@@ -13,8 +14,8 @@ import (
 
 //JSON literal and object for server to take in and return as needed
 type Data struct {
-	key string `json:"key"`
-	value string`json:"value"`
+	Key string `json:"key"`
+	Value string`json:"value"`
 }
 
 //func (d *Data) Read()
@@ -101,7 +102,7 @@ func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	//pass encoded json to cache for storage
-	err = s.cache.Create(data.key, data.value)
+	err = s.cache.Create(data.Key, data.Value)
 	if err !=nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -114,43 +115,58 @@ func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 
 func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 	var data = Data{}
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	body, err := ioutil.ReadAll(r.Body)
+	fmt.Println(body)
 	//if request is empty error out
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Status: ", "http.StatusBadRequest")
 		return
 	}
+	
+	//transform request to json; if json is not correctly configured error out
+	if err := json.Unmarshal(body, &data); err !=nil {
+		w.Header().Set(headerTypeKey, headerValue)
+		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
+		return
+	}
+	fmt.Println("unmarshalled json data: ", data)
+	fmt.Println(data.Key)
+	fmt.Println("body content: ", body)
+	fmt.Println("pointer to data: ", &data)
+	
 	//if request body is empty error out
 	if err := r.Body.Close(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Status: ", "http.StatusBadRequest")
 		return
-
 	}
-	//transform request to json; if json is not correctly configured error out
-	if err := json.Unmarshal(body, &data); err !=nil {
+
+	
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil{
 		w.Header().Set(headerTypeKey, headerValue)
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
-		if err := json.NewEncoder(w).Encode(err); err !=nil {
-		
-		}
+		return
 	}
+	fmt.Println("decoded json data: ", data)
+	fmt.Println(data.Key)
+	fmt.Println("body content: ", body)
+	fmt.Println("pointer to data: ", &data)
+	
+
 	//pass encoded json to cache for request of data to return
-	simpleKVC, err := s.cache.Read(data.key)
+	readReq, err := s.cache.Read(data.Key)
 	//if Read returns error return not found status from server to client
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.Header().Set(headerTypeKey, headerValue)
 		w.WriteHeader(http.StatusNotFound)
-		if err := json.NewEncoder(w).Encode(err); err != nil {
-			w.Header().Set(headerTypeKey, headerValue)
-		}
+		return
 	}
 	//if Read returns string (and error not nil) then encode response for return to client
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusAccepted)
-	if err := json.NewEncoder(w).Encode(simpleKVC); err != nil {
-		panic(err)
+	if err := json.NewEncoder(w).Encode(readReq); err != nil {
+		w.Header().Set(headerTypeKey, headerValue)
+		w.WriteHeader(http.StatusAccepted)
+		return
 	}
 }
 
@@ -174,7 +190,7 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 		}
 	}
 	//pass encoded json to cache for storage update
-	updateKVC := s.cache.Update(data.key, data.value)
+	updateKVC := s.cache.Update(data.Key, data.Value)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(updateKVC); err !=nil{
@@ -202,7 +218,7 @@ func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
 		}
 	}
 	//pass encoded json to cache for request of data to return
-	deleteKVC := s.cache.Delete(data.key)
+	deleteKVC := s.cache.Delete(data.Key)
 	//if Delete returns error return not found status from server to client
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
