@@ -18,7 +18,7 @@ func TestServer_Put(t *testing.T) {
 	server := &Server{"8080", mockCache, nil}
 	
 	t.Run("put works", func(t *testing.T) {
-		req, err := http.NewRequest("PUT", "/PUT", strings.NewReader(`{"key": "foo","value": "bar"}`))
+		req, err := http.NewRequest("PUT", "/", strings.NewReader(`{"key": "foo","value": "bar"}`))
 		require.NoError(t, err)
 		
 		rr := httptest.NewRecorder()
@@ -28,7 +28,7 @@ func TestServer_Put(t *testing.T) {
 	
 	t.Run("put returns error when content is empty - like malformed JSON error", func(t *testing.T) {
 		
-		req, err := http.NewRequest("PUT", "PUT",strings.NewReader(""))
+		req, err := http.NewRequest("PUT", "/",strings.NewReader(""))
 		require.NoError(t, err)
 		
 		rr := httptest.NewRecorder()
@@ -37,7 +37,7 @@ func TestServer_Put(t *testing.T) {
 	})
 	
 	t.Run("put returns error when json malformed", func(t *testing.T) {
-		req, err := http.NewRequest("PUT", "/PUT",strings.NewReader(`MALFORMED JSON`))
+		req, err := http.NewRequest("PUT", "/",strings.NewReader(`MALFORMED JSON`))
 		require.NoError(t, err)
 		
 		rr := httptest.NewRecorder()
@@ -47,35 +47,44 @@ func TestServer_Put(t *testing.T) {
 }
 
 func TestServer_Get(t *testing.T) {
-	mockCache := kvcache.NewMockSimpleKVCache(true, "test")
+	mockCache := NewServerTestKeyValueCache("testKey", "testValue")
 	server := &Server{"8080", mockCache, nil}
 
 	t.Run("get works", func(t *testing.T) {
-		req, err := http.NewRequest("GET", "/GET", strings.NewReader(`{"key": "success"}`))
+		req, err := http.NewRequest("GET", "/", strings.NewReader(`{"key": "testKey"}`))
 		require.NoError(t, err)
 
 		rr := httptest.NewRecorder()
 		server.Get(rr, req)
-		assert.Equal(t, rr.Code, http.StatusAccepted)
+		assert.Equal(t, rr.Code, http.StatusOK)
 	})
 	
 	t.Run("get returns error when key doesn't exist in cache", func(t *testing.T) {
-		req, err := http.NewRequest("GET", "/GET", strings.NewReader(`{"success": "true"}`))
+		req, err := http.NewRequest("GET", "/", strings.NewReader(`{"key": "true"}`))
 		require.NoError(t, err)
 		
 		rr := httptest.NewRecorder()
 		server.Get(rr, req)
 		assert.Equal(t, rr.Code, http.StatusNotFound)
-		
 	})
-
+	
+	t.Run("get returns error when JSON MALFORMED", func(t *testing.T) {
+		req, err := http.NewRequest("GET","/", strings.NewReader(`MALFORMED JSON`))
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Get(rr, req)
+		assert.Equal(t, rr.Code, http.StatusUnprocessableEntity)
+	})
 }
+
+
+/*Mock Cache structure specifically to test Server handler function implementation*/
 
 type ServerTestKeyValueCache struct {
 	Key string `json:"key"`
 	Value string `json:"value"`
 }
-
 
 func NewServerTestKeyValueCache(key, value string) kvcache.KeyValueCache {
 	return &ServerTestKeyValueCache{key,value}
@@ -91,10 +100,14 @@ func (st *ServerTestKeyValueCache) Read(key string) (string, error) {
 	if st == nil {
 		return "", fmt.Errorf("update error: cache empty")
 	}
-	if st.Key != ""{
-		return st.Value, nil
+	if key == ""{
+		return "", fmt.Errorf("read error: key is empty")
 	}
-	return "", fmt.Errorf("read error")
+	if key != st.Key {
+		return "", fmt.Errorf("read error: key is empty")
+	}
+	return st.Value, nil
+	
 }
 
 func (st *ServerTestKeyValueCache) Update(key, value string) error {

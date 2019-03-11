@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
@@ -40,22 +39,22 @@ func StartServer(port string) {
 	routes := Routes{
 		Route{
 			"PUT",
-			"/PUT",
+			"/",
 			server.Put,
 		},
 		Route{
 			"POST",
-			"/POST",
+			"/",
 			server.Post,
 		},
 		Route{
 			"GET",
-			"/GET",
+			"/",
 			server.Get,
 		},
 		Route{
 			"DELETE",
-			"/DELETE",
+			"/",
 			server.Delete,
 		},
 	}
@@ -83,7 +82,7 @@ func NewData(key, value string) *Data{
 
 func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 	var data = Data{}
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	body, err := ioutil.ReadAll(r.Body)
 	//if body is empty error out
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -107,7 +106,6 @@ func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	
 	w.Header().Set(headerTypeKey, headerValue)
 	w.WriteHeader(http.StatusCreated)
 	return
@@ -116,44 +114,23 @@ func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 	var data = Data{}
 	body, err := ioutil.ReadAll(r.Body)
-	fmt.Println(body)
 	//if request is empty error out
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Status: ", "http.StatusBadRequest")
 		return
 	}
-	
+	if err := r.Body.Close(); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Status: ", "http.StatusBadRequest")
+		return
+	}
 	//transform request to json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
 		w.Header().Set(headerTypeKey, headerValue)
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
 		return
 	}
-	fmt.Println("unmarshalled json data: ", data)
-	fmt.Println(data.Key)
-	fmt.Println("body content: ", body)
-	fmt.Println("pointer to data: ", &data)
-	
-	//if request body is empty error out
-	if err := r.Body.Close(); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("Status: ", "http.StatusBadRequest")
-		return
-	}
-
-	
-	if err := json.NewDecoder(r.Body).Decode(&data); err != nil{
-		w.Header().Set(headerTypeKey, headerValue)
-		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
-		return
-	}
-	fmt.Println("decoded json data: ", data)
-	fmt.Println(data.Key)
-	fmt.Println("body content: ", body)
-	fmt.Println("pointer to data: ", &data)
-	
-
 	//pass encoded json to cache for request of data to return
 	readReq, err := s.cache.Read(data.Key)
 	//if Read returns error return not found status from server to client
@@ -165,7 +142,7 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 	//if Read returns string (and error not nil) then encode response for return to client
 	if err := json.NewEncoder(w).Encode(readReq); err != nil {
 		w.Header().Set(headerTypeKey, headerValue)
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 }
