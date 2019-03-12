@@ -28,8 +28,8 @@ type Server struct {
 	router *mux.Router
 }
 
- var headerTypeKey = "Content-Type"
- var headerValue = "application/json; charset=UTF-8"
+ const headerTypeKey = "Content-Type"
+ const headerValue = "application/json; charset=UTF-8"
 
 func StartServer(port string) {
 	server := &Server{port:port, cache:kvcache.NewSimpleKVCache()}
@@ -126,27 +126,23 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
 		return
 	}
-	//pass encoded json to cache for request of data to return
-	readReq, err := s.cache.Read(data.Key)
+	//pass unmarshalled json to cache for request of data to return
+	readResult, err := s.cache.Read(data.Key)
 	//if Read returns error return not found status from server to client
 	if err != nil {
-		w.Header().Set(headerTypeKey, headerValue)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	
-	result, err := json.Marshal(readReq)
+	//convert string into byte slice for writer to send content back to client
+	result := []byte(readResult)
 	if err !=nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(result)
+	return
 	
-	//if Read returns string (and error not nil) then encode response for return to client
-	if err := json.NewEncoder(w).Encode(result); err != nil {
-		w.Header().Set(headerTypeKey, headerValue)
-		w.WriteHeader(http.StatusOK)
-		return
-	}
 }
 
 func (s *Server) Post(w http.ResponseWriter, r *http.Request){
@@ -209,7 +205,7 @@ func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
 		}
 	}
 	//if Read returns string (and error not nil) then encode response for return to client
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Header().Set(headerTypeKey, headerValue)
 	w.WriteHeader(http.StatusAccepted)
 	if err := json.NewEncoder(w).Encode(deleteKVC); err != nil {
 		panic(err)

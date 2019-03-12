@@ -158,6 +158,9 @@ https://github.com/spf13/cobra/pull/817
 
 - Unit testing Hanlder Funcs and Servers in Go - httptest package from Golang documentation: https://golang.org/pkg/net/http/httptest/
 
+- GoLang Blog on JSON handling in GO: https://blog.golang.org/json-and-go
+
+- More on JSON in Go: https://golang.org/pkg/encoding/json/
 
 #### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)
 - See [this project](https://github.com/FavoredFortune/CobraCLI) example CLI application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)

@@ -35,7 +35,7 @@ func TestServer_Put(t *testing.T) {
 	
 	t.Run("put returns error when content is empty - like malformed JSON error", func(t *testing.T) {
 		
-		req, err := http.NewRequest("PUT", "/",strings.NewReader(""))
+		req, err := http.NewRequest("PUT", "/", strings.NewReader(""))
 		require.NoError(t, err)
 		
 		rr := httptest.NewRecorder()
@@ -44,12 +44,21 @@ func TestServer_Put(t *testing.T) {
 	})
 	
 	t.Run("put returns error when json malformed", func(t *testing.T) {
-		req, err := http.NewRequest("PUT", "/",strings.NewReader(`MALFORMED JSON`))
+		req, err := http.NewRequest("PUT", "/", strings.NewReader(`MALFORMED JSON`))
 		require.NoError(t, err)
 		
 		rr := httptest.NewRecorder()
 		server.Put(rr, req)
 		assert.Equal(t, rr.Code, http.StatusUnprocessableEntity)
+	})
+	
+	t.Run("put returns error when Read Method fails because key is empty", func(t *testing.T) {
+		req, err := http.NewRequest("PUT", "/", strings.NewReader(`{"key": "","value": "bar"}`) )
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Put(rr, req)
+		assert.Equal(t, rr.Code, http.StatusBadRequest )
 	})
 }
 
@@ -64,6 +73,12 @@ func TestServer_Get(t *testing.T) {
 		rr := httptest.NewRecorder()
 		server.Get(rr, req)
 		assert.Equal(t, rr.Code, http.StatusOK)
+		
+		actual := "testValue"
+		
+		expected := rr.Body.String()
+		fmt.Println("this is body string: ", rr.Body.String())
+		assert.Equal(t, expected, actual)
 	})
 	
 	t.Run("get returns error when key doesn't exist in cache", func(t *testing.T) {
@@ -131,6 +146,9 @@ func NewServerTestKeyValueCache(key, value string) kvcache.KeyValueCache {
 }
 
 func (st *ServerTestKeyValueCache) Create(key, value string) error {
+	if key == "" || value == ""{
+		return fmt.Errorf("update error: key or value is empty")
+	}
 	st.Key = key
 	st.Value = value
 	return nil
