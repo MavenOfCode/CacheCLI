@@ -86,7 +86,7 @@ Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction
  
        2. in terminal `$ go tool cover -html=coverage.out -o coverage.html`
        3. in IDE right click on `coverage.html` file, choose **open in browser** option
- 5. After step 4, if you want to see coverage by function in terminal `$ go tool cover -func=c.out`
+ 5. After step 4, if you want to see coverage by function in terminal `$ go tool cover -func=coverage.out`
 
 ## See [Test Coverage Reports](TestCoverageReports.md) for details on testing for each package
 
@@ -158,6 +158,9 @@ https://github.com/spf13/cobra/pull/817
 
 - Unit testing Hanlder Funcs and Servers in Go - httptest package from Golang documentation: https://golang.org/pkg/net/http/httptest/
 
+- GoLang Blog on JSON handling in GO: https://blog.golang.org/json-and-go
+
+- More on JSON in Go: https://golang.org/pkg/encoding/json/
 
 #### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)
 - See [this project](https://github.com/FavoredFortune/CobraCLI) example CLI application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)
