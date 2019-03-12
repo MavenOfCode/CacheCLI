@@ -52,8 +52,17 @@ func TestServer_Put(t *testing.T) {
 		assert.Equal(t, rr.Code, http.StatusUnprocessableEntity)
 	})
 	
-	t.Run("put returns error when Read Method fails because key is empty", func(t *testing.T) {
+	t.Run("put returns error when key is empty", func(t *testing.T) {
 		req, err := http.NewRequest("PUT", "/", strings.NewReader(`{"key": "","value": "bar"}`) )
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Put(rr, req)
+		assert.Equal(t, rr.Code, http.StatusBadRequest )
+	})
+	
+	t.Run("put returns error when value is empty", func(t *testing.T) {
+		req, err := http.NewRequest("PUT", "/", strings.NewReader(`{"key": "foo","value": ""}`) )
 		require.NoError(t, err)
 		
 		rr := httptest.NewRecorder()
@@ -66,20 +75,28 @@ func TestServer_Get(t *testing.T) {
 	mockCache := NewServerTestKeyValueCache("testKey", "testValue")
 	server := &Server{"8080", mockCache, nil}
 
-	t.Run("get works", func(t *testing.T) {
+	t.Run("get works and returns correct status", func(t *testing.T) {
 		req, err := http.NewRequest("GET", "/", strings.NewReader(`{"key": "testKey"}`))
 		require.NoError(t, err)
 
 		rr := httptest.NewRecorder()
 		server.Get(rr, req)
 		assert.Equal(t, rr.Code, http.StatusOK)
+	})
+	
+	t.Run("get works and returns correct value", func(t *testing.T) {
+		req, err := http.NewRequest("GET", "/", strings.NewReader(`{"key": "testKey"}`))
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Get(rr, req)
 		
 		actual := "testValue"
-		
 		expected := rr.Body.String()
 		fmt.Println("this is body string: ", rr.Body.String())
 		assert.Equal(t, expected, actual)
 	})
+	
 	
 	t.Run("get returns error when key doesn't exist in cache", func(t *testing.T) {
 		req, err := http.NewRequest("GET", "/", strings.NewReader(`{"key": "true"}`))
@@ -131,8 +148,51 @@ func TestServer_Post(t *testing.T){
 		assert.Equal(t, rr.Code, http.StatusUnprocessableEntity)
 		
 	})
+	
+	t.Run("post returns error when content is empty - like malformed JSON error", func(t *testing.T) {
+		
+		req, err := http.NewRequest("POST", "/", strings.NewReader(""))
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Post(rr, req)
+		assert.Equal(t, rr.Code,http.StatusUnprocessableEntity )
+	})
+	
+	t.Run("post returns error when key is empty", func(t *testing.T) {
+		req, err := http.NewRequest("POST", "/", strings.NewReader(`{"key": "","value": "bar"}`) )
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Post(rr, req)
+		assert.Equal(t, rr.Code, http.StatusBadRequest )
+	})
+	
+	t.Run("post returns error when value is empty", func(t *testing.T) {
+		req, err := http.NewRequest("PUT", "/", strings.NewReader(`{"key": "foo","value": ""}`) )
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Post(rr, req)
+		assert.Equal(t, rr.Code, http.StatusBadRequest )
+	})
 }
 
+func TestServer_Delete(t *testing.T) {
+	mockCache := NewServerTestKeyValueCache("testKey", "testValue")
+	server := &Server{"8080", mockCache, nil}
+	
+	t.Run("delete works", func(t *testing.T) {
+		req, err:= http.NewRequest("DELETE", "/", strings.NewReader(`{"key": "testKey"}`))
+		require.NoError(t, err)
+		
+		rr:= httptest.NewRecorder()
+		server.Delete(rr, req)
+		assert.Equal(t, rr.Code, http.StatusAccepted)
+		
+
+	})
+}
 
 /*Mock Cache structure specifically to test Server handler function implementation*/
 
@@ -185,10 +245,16 @@ func (st *ServerTestKeyValueCache) Update(key, value string) error {
 
 func (st *ServerTestKeyValueCache) Delete(key string) error {
 	if st == nil {
-		return fmt.Errorf("update error: cache empty")
+		return fmt.Errorf("delete error: cache empty")
 	}
-	if st.Key != "" {
-		return nil
+	if key == "" {
+		return fmt.Errorf("delete error: key is empty")
 	}
-	return fmt.Errorf("delete error")
+	if key != st.Key {
+		return fmt.Errorf("delete error: key is not in cache")
+	}
+	st.Key = key
+	st.Key = ""
+	st.Value = ""
+	return nil
 }

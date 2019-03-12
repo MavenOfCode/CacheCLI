@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -135,19 +134,18 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 	}
 	//convert string into byte slice for writer to send content back to client
 	result := []byte(readResult)
-	if err !=nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
+	response, err := w.Write(result)
+	if err != nil {
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(result)
+	w.WriteHeader(response)
 	return
 	
 }
 
 func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 	var data = Data{}
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	body, err := ioutil.ReadAll(r.Body)
 	//if request is empty error out
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -158,13 +156,12 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	//transform request to json; if json is not correctly configured error out
+	//transform request from json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
-		w.Header().Set(headerTypeKey, headerValue)
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
 		return
 	}
-	//pass encoded json to cache for storage update
+	//pass decoded json to cache for storage update
 	err = s.cache.Update(data.Key, data.Value)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -177,37 +174,32 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 
 func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
 	var data = Data{}
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	body, err := ioutil.ReadAll(r.Body)
 	//if request is empty error out
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	//if request body is empty error out
 	if err := r.Body.Close(); err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
-	//transform request to json; if json is not correctly configured error out
+	//transform request from json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422)//unprocessable entity (json failed)
-		if err := json.NewEncoder(w).Encode(err); err !=nil {
-			panic(err)
-		}
+		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
+		return
 	}
-	//pass encoded json to cache for request of data to return
-	deleteKVC := s.cache.Delete(data.Key)
+	//pass decoded json to cache for request of data to return
+	err = s.cache.Delete(data.Key)
 	//if Delete returns error return not found status from server to client
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(http.StatusNotFound)
-		if err := json.NewEncoder(w).Encode(err); err != nil {
-			panic(err)
-		}
+		return
 	}
-	//if Read returns string (and error not nil) then encode response for return to client
 	w.Header().Set(headerTypeKey, headerValue)
 	w.WriteHeader(http.StatusAccepted)
-	if err := json.NewEncoder(w).Encode(deleteKVC); err != nil {
-		panic(err)
-	}
+	return
+	
+	
 }
