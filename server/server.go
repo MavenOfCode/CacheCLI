@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
@@ -73,13 +74,79 @@ func StartServer(port string) {
 	log.Fatal(http.ListenAndServe(port, router))
 }
 
-//not sure I need this, but might for testing so keeping for now
-//constructor function for generating data
-func NewData(key, value string) *Data{
-	return &Data{key, value}
+func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error){
+	var data = Data{}
+	//if body is empty error out
+	if r.Body == nil {
+		w.WriteHeader(http.StatusNoContent)
+		err := "body empty"
+		result := []byte(err)
+		response, err2 := w.Write(result)
+		if err2 != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return data, err2
+		}
+		w.WriteHeader(response)
+		return data, fmt.Errorf(err)
+	}
+	//if ReadAll method errors out
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusNoContent)
+		err := "body empty"
+		result := []byte(err)
+		response, err2 := w.Write(result)
+		if err2 != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return data, err2
+		}
+		w.WriteHeader(response)
+		return data, fmt.Errorf(err)
+	}
+	//if request body is closed without content error out
+	if err := r.Body.Close(); err != nil {
+		w.WriteHeader(http.StatusExpectationFailed)
+		err := "body won't close"
+		result := []byte(err)
+		response, err2 := w.Write(result)
+		if err2 != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return data, err2
+		}
+		w.WriteHeader(response)
+		return data, fmt.Errorf(err)
+	}
+	//transform request from json; if json is not correctly configured error out
+	if err := json.Unmarshal(body, &data); err !=nil {
+		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
+		err := "cannot process json"
+		result := []byte (err)
+		response, err2 := w.Write(result)
+		if err2 !=nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return data, err2
+		}
+		w.WriteHeader(response)
+		return data, fmt.Errorf(err)
+	}
+	//transform request to json to pass on to handler methods and error out if transform fails
+	if err := json.NewEncoder(w).Encode(data); err !=nil{
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		err := "cannot process json"
+		result := []byte (err)
+		response, err2 := w.Write(result)
+		if err2 !=nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return data, err2
+		}
+		w.WriteHeader(response)
+		return data, fmt.Errorf("json encode fail: '%v' ", err2)
+	}
+	w.WriteHeader(http.StatusOK)
+	return data, nil
 }
-
-func (s * Server) Put(w http.ResponseWriter, r *http.Request){
+ 
+func (s *Server) Put(w http.ResponseWriter, r *http.Request){
 	var data = Data{}
 	body, err := ioutil.ReadAll(r.Body)
 	//if body is empty error out
@@ -136,6 +203,7 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 	result := []byte(readResult)
 	response, err := w.Write(result)
 	if err != nil {
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
 	w.WriteHeader(response)

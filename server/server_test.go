@@ -19,8 +19,52 @@ func TestNewServerTestKeyValueCache(t *testing.T){
 		assert.NotNil(t, testServerCache)
 	})
 }
-func TestServer_Put(t *testing.T) {
+
+func TestServer_HandleData(t *testing.T) {
+	mockCache := NewServerTestKeyValueCache("testKey", "testValue")
+	server := &Server{"8080", mockCache, nil}
 	
+	t.Run("handle data returns data", func(t *testing.T) {
+		req, err := http.NewRequest("PUT", "/", strings.NewReader(`{"key": "foo","value": "bar"}`))
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		result, err := server.HandleData(rr, req)
+		assert.Equal(t, result, Data{ "foo","bar"})
+		//status code passed back is correct too
+		assert.Equal(t, rr.Code, http.StatusOK )
+	})
+	
+	t.Run("handle data returns error if body is nil", func(t *testing.T) {
+		req, err := http.NewRequest("PUT", "/", nil)
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		result, err := server.HandleData(rr, req)
+		assert.Equal(t, result, Data{})
+		//confirm error returned
+		assert.Error(t, err)
+		//status code passed back is correct too
+		assert.Equal(t, rr.Code, http.StatusNoContent)
+	})
+	
+	t.Run("handle data returns error if JSON is MALFORMED", func(t *testing.T) {
+		req, err := http.NewRequest("PUT", "/", strings.NewReader(`MALFORMED JSON`))
+		require.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		result, err := server.HandleData(rr, req)
+		assert.Equal(t, result, Data{})
+		//confirm error returned
+		assert.Error(t, err)
+		//status code passed back is correct too
+		assert.Equal(t, rr.Code, http.StatusUnprocessableEntity)
+		
+	})
+	
+}
+
+func TestServer_Put(t *testing.T) {
 	mockCache := NewServerTestKeyValueCache("testKey", "testValue")
 	server := &Server{"8080", mockCache, nil}
 	
@@ -34,7 +78,6 @@ func TestServer_Put(t *testing.T) {
 	})
 	
 	t.Run("put returns error when content is empty - like malformed JSON error", func(t *testing.T) {
-		
 		req, err := http.NewRequest("PUT", "/", strings.NewReader(""))
 		require.NoError(t, err)
 		
@@ -93,7 +136,6 @@ func TestServer_Get(t *testing.T) {
 		
 		actual := "testValue"
 		expected := rr.Body.String()
-		fmt.Println("this is body string: ", rr.Body.String())
 		assert.Equal(t, expected, actual)
 	})
 	
@@ -183,14 +225,39 @@ func TestServer_Delete(t *testing.T) {
 	server := &Server{"8080", mockCache, nil}
 	
 	t.Run("delete works", func(t *testing.T) {
-		req, err:= http.NewRequest("DELETE", "/", strings.NewReader(`{"key": "testKey"}`))
+		req, err := http.NewRequest("DELETE", "/", strings.NewReader(`{"key": "testKey"}`))
 		require.NoError(t, err)
 		
-		rr:= httptest.NewRecorder()
+		rr := httptest.NewRecorder()
 		server.Delete(rr, req)
 		assert.Equal(t, rr.Code, http.StatusAccepted)
+	})
+	
+	t.Run("delete returns error when JSON MALFORMED", func(t *testing.T) {
+		req, err := http.NewRequest("DELETE", "/", strings.NewReader(`MALFORMED JSON`))
+		require.NoError(t, err)
 		
-
+		rr := httptest.NewRecorder()
+		server.Delete(rr, req)
+		assert.Equal(t, rr.Code, http.StatusUnprocessableEntity)
+	})
+	
+	t.Run("delete returns error when key is empty", func(t *testing.T) {
+		req, err := http.NewRequest("DELETE", "/", strings.NewReader(`{"key": ""}`))
+		assert.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Delete(rr, req)
+		assert.Equal(t, rr.Code, http.StatusNotFound)
+	})
+	
+	t.Run("delete returns error when key is not in cache", func(t *testing.T) {
+		req, err := http.NewRequest("DELETE", "/", strings.NewReader(`{"key": "foo"}`))
+		assert.NoError(t, err)
+		
+		rr := httptest.NewRecorder()
+		server.Delete(rr, req)
+		assert.Equal(t, rr.Code, http.StatusNotFound)
 	})
 }
 
