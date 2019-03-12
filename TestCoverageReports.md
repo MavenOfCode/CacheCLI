@@ -5,7 +5,7 @@
 
 ## KVCache: 100% of statements; 0.14s
 
---__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See readme for full details on how to run your own.
+--__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See [readme](README.md)  for full details on how to run your own.
 
 ### `go tool cover -func=coverage.out`
 
@@ -72,7 +72,8 @@
 ## CMD: 84.5% coverage of statements; 0.014s (3/5/19)
 ## 95.2% according to HTML coverage report
    
---__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See readme for full details on how to run your own.
+--__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. 
+See [readme](README.md) for full details on how to run your own.
 
 ### `go tool cover -func=coverage.out` 
 ```
@@ -164,3 +165,17 @@ total:				(statements)		84.5%
   ok  	CacheCLI/cmd	0.013s
 ```
 
+## Server: only 45.7% of statements; 0.017s (3/11/19)
+
+--NOTE Ran go tool cover `-html=c.out -o coverage.html` to find where coverage is lacking for this package. See [readme](README.md) for full details on how to run your own.
+
+### `go tool cover -func=coverage.out`
+
+
+```CacheCLI/server/server.go:34:	StartServer	0.0%
+   CacheCLI/server/server.go:79:	NewData		0.0%
+   CacheCLI/server/server.go:83:	Put		65.0%
+   CacheCLI/server/server.go:114:	Get		60.9%
+   CacheCLI/server/server.go:150:	Post		78.9%
+   CacheCLI/server/server.go:180:	Delete		0.0%
+   total:				(statements)	45.7%```

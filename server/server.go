@@ -86,7 +86,6 @@ func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 	//if body is empty error out
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("Status: ", "http.StatusBadRequest")
 		return
 	}
 	//if request body is closed without content error out
@@ -96,7 +95,6 @@ func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 	}
 	//transform request to json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
-		w.Header().Set(headerTypeKey, headerValue )
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
 		return
 	}
@@ -117,17 +115,14 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 	//if request is empty error out
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("Status: ", "http.StatusBadRequest")
 		return
 	}
 	if err := r.Body.Close(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("Status: ", "http.StatusBadRequest")
 		return
 	}
 	//transform request to json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
-		w.Header().Set(headerTypeKey, headerValue)
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
 		return
 	}
@@ -139,8 +134,15 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
+	
+	result, err := json.Marshal(readReq)
+	if err !=nil {
+		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
+		return
+	}
+	
 	//if Read returns string (and error not nil) then encode response for return to client
-	if err := json.NewEncoder(w).Encode(readReq); err != nil {
+	if err := json.NewEncoder(w).Encode(result); err != nil {
 		w.Header().Set(headerTypeKey, headerValue)
 		w.WriteHeader(http.StatusOK)
 		return

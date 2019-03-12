@@ -86,7 +86,7 @@ Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction
  
        2. in terminal `$ go tool cover -html=coverage.out -o coverage.html`
        3. in IDE right click on `coverage.html` file, choose **open in browser** option
- 5. After step 4, if you want to see coverage by function in terminal `$ go tool cover -func=c.out`
+ 5. After step 4, if you want to see coverage by function in terminal `$ go tool cover -func=coverage.out`
 
 ## See [Test Coverage Reports](TestCoverageReports.md) for details on testing for each package
 
