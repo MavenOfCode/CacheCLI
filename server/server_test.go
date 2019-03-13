@@ -59,9 +59,7 @@ func TestServer_HandleData(t *testing.T) {
 		assert.Error(t, err)
 		//status code passed back is correct too
 		assert.Equal(t, rr.Code, http.StatusUnprocessableEntity)
-		
 	})
-	
 }
 
 func TestServer_Put(t *testing.T) {
@@ -101,7 +99,10 @@ func TestServer_Put(t *testing.T) {
 		
 		rr := httptest.NewRecorder()
 		server.Put(rr, req)
-		assert.Equal(t, rr.Code, http.StatusBadRequest )
+		//actual error message to check against "update error: key or value is empty"
+		expected := rr.Body.String()
+		result := strings.ContainsAny(expected, "empty")
+		assert.True(t,result)
 	})
 	
 	t.Run("put returns error when value is empty", func(t *testing.T) {
@@ -110,7 +111,10 @@ func TestServer_Put(t *testing.T) {
 		
 		rr := httptest.NewRecorder()
 		server.Put(rr, req)
-		assert.Equal(t, rr.Code, http.StatusBadRequest )
+		//actual error message to check against "update error: key or value is empty"
+		expected := rr.Body.String()
+		result := strings.ContainsAny(expected, "empty")
+		assert.True(t,result)
 	})
 }
 
@@ -134,11 +138,12 @@ func TestServer_Get(t *testing.T) {
 		rr := httptest.NewRecorder()
 		server.Get(rr, req)
 		
+		//actual error message to check against actual value
 		actual := "testValue"
 		expected := rr.Body.String()
-		assert.Equal(t, expected, actual)
+		result := strings.ContainsAny(expected, actual)
+		assert.True(t,result)
 	})
-	
 	
 	t.Run("get returns error when key doesn't exist in cache", func(t *testing.T) {
 		req, err := http.NewRequest("GET", "/", strings.NewReader(`{"key": "true"}`))
@@ -146,7 +151,11 @@ func TestServer_Get(t *testing.T) {
 		
 		rr := httptest.NewRecorder()
 		server.Get(rr, req)
-		assert.Equal(t, rr.Code, http.StatusNotFound)
+	
+		//actual error message to check against "read error: key not in cache"
+		expected := rr.Body.String()
+		result := strings.ContainsAny(expected, "not in cache")
+		assert.True(t,result)
 	})
 	
 	t.Run("get returns error when JSON MALFORMED", func(t *testing.T) {
