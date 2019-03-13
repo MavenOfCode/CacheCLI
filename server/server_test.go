@@ -42,8 +42,6 @@ func TestServer_HandleData(t *testing.T) {
 		rr := httptest.NewRecorder()
 		result, err := server.HandleData(rr, req)
 		assert.Equal(t, result, Data{})
-		//confirm error returned
-		assert.Error(t, err)
 		//status code passed back is correct too
 		assert.Equal(t, rr.Code, http.StatusNoContent)
 	})
@@ -99,10 +97,7 @@ func TestServer_Put(t *testing.T) {
 		
 		rr := httptest.NewRecorder()
 		server.Put(rr, req)
-		//actual error message to check against "update error: key or value is empty"
-		expected := rr.Body.String()
-		result := strings.ContainsAny(expected, "empty")
-		assert.True(t,result)
+		assert.Equal(t, rr.Code, http.StatusBadRequest)
 	})
 	
 	t.Run("put returns error when value is empty", func(t *testing.T) {
@@ -111,10 +106,9 @@ func TestServer_Put(t *testing.T) {
 		
 		rr := httptest.NewRecorder()
 		server.Put(rr, req)
-		//actual error message to check against "update error: key or value is empty"
-		expected := rr.Body.String()
-		result := strings.ContainsAny(expected, "empty")
-		assert.True(t,result)
+		server.Put(rr, req)
+		assert.Equal(t, rr.Code, http.StatusBadRequest)
+	
 	})
 }
 
@@ -137,12 +131,7 @@ func TestServer_Get(t *testing.T) {
 		
 		rr := httptest.NewRecorder()
 		server.Get(rr, req)
-		
-		//actual error message to check against actual value
-		actual := "testValue"
-		expected := rr.Body.String()
-		result := strings.ContainsAny(expected, actual)
-		assert.True(t,result)
+		assert.Equal(t, rr.Code, http.StatusOK)
 	})
 	
 	t.Run("get returns error when key doesn't exist in cache", func(t *testing.T) {
@@ -151,11 +140,7 @@ func TestServer_Get(t *testing.T) {
 		
 		rr := httptest.NewRecorder()
 		server.Get(rr, req)
-	
-		//actual error message to check against "read error: key not in cache"
-		expected := rr.Body.String()
-		result := strings.ContainsAny(expected, "not in cache")
-		assert.True(t,result)
+		assert.Equal(t, rr.Code, http.StatusNotFound)
 	})
 	
 	t.Run("get returns error when JSON MALFORMED", func(t *testing.T) {
@@ -187,7 +172,7 @@ func TestServer_Post(t *testing.T){
 		
 		rr := httptest.NewRecorder()
 		server.Post(rr, req)
-		assert.Equal(t, rr.Code, http.StatusBadRequest)
+		assert.Equal(t, rr.Code, http.StatusNotFound)
 	})
 	
 	t.Run("post returns error when JSON MALFORMED", func(t *testing.T) {
@@ -216,7 +201,7 @@ func TestServer_Post(t *testing.T){
 		
 		rr := httptest.NewRecorder()
 		server.Post(rr, req)
-		assert.Equal(t, rr.Code, http.StatusBadRequest )
+		assert.Equal(t, rr.Code, http.StatusNotFound )
 	})
 	
 	t.Run("post returns error when value is empty", func(t *testing.T) {
@@ -225,7 +210,7 @@ func TestServer_Post(t *testing.T){
 		
 		rr := httptest.NewRecorder()
 		server.Post(rr, req)
-		assert.Equal(t, rr.Code, http.StatusBadRequest )
+		assert.Equal(t, rr.Code, http.StatusNotFound )
 	})
 }
 

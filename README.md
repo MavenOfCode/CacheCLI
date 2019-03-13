@@ -4,6 +4,11 @@
 
 Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction-to-go-language-e66cb5962900) for background on Go and how to install it on Mac OSX
 
+## Instructions to run the full Client/Server CLI Application
+1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
+2. Input `go run main.go` into the command line to start the server
+3. More coming soon...
+
 ## Instructions to build the CLI
 1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
 

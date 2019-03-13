@@ -167,15 +167,92 @@ total:				(statements)		84.5%
 
 ## Server: only 45.7% of statements; 0.017s (3/11/19)
 
+## Server: 61.9% of statements; 0.015s (3/13/19)*
+ *some if/err statements untestable in this framework as they are 
+  package commands
+
 --NOTE Ran go tool cover `-html=c.out -o coverage.html` to find where coverage is lacking for this package. See [readme](README.md) for full details on how to run your own.
+
+
 
 ### `go tool cover -func=coverage.out`
 
 
-```CacheCLI/server/server.go:34:	StartServer	0.0%
-   CacheCLI/server/server.go:79:	NewData		0.0%
-   CacheCLI/server/server.go:83:	Put		65.0%
-   CacheCLI/server/server.go:114:	Get		60.9%
-   CacheCLI/server/server.go:150:	Post		78.9%
-   CacheCLI/server/server.go:180:	Delete		0.0%
-   total:				(statements)	45.7%```
+    ```
+    //NOT TESTING PACKAGE PROVIDED METHODS
+    CacheCLI/server/server.go:33:	StartServer	0.0%
+    
+    //HANDLER HELPER FUNCTION
+    CacheCLI/server/server.go:76:	HandleData	48.6%
+    
+    //SERVER HANDLER FUNCTIONS
+    CacheCLI/server/server.go:126:	Put		77.8%
+    CacheCLI/server/server.go:153:	Get		63.0%
+    CacheCLI/server/server.go:193:	Post		78.9%
+    CacheCLI/server/server.go:222:	Delete		78.9%
+    total:				(statements)	61.9%
+    ```
+
+### `go test -v` (verbose testing)
+
+```=== RUN   TestNewServerTestKeyValueCache
+   === RUN   TestNewServerTestKeyValueCache/it_creates_a_new_mock_server_cache
+   --- PASS: TestNewServerTestKeyValueCache (0.00s)
+       --- PASS: TestNewServerTestKeyValueCache/it_creates_a_new_mock_server_cache (0.00s)
+   === RUN   TestServer_HandleData
+   === RUN   TestServer_HandleData/handle_data_returns_data
+   === RUN   TestServer_HandleData/handle_data_returns_error_if_body_is_nil
+   === RUN   TestServer_HandleData/handle_data_returns_error_if_JSON_is_MALFORMED
+   --- PASS: TestServer_HandleData (0.00s)
+       --- PASS: TestServer_HandleData/handle_data_returns_data (0.00s)
+       --- PASS: TestServer_HandleData/handle_data_returns_error_if_body_is_nil (0.00s)
+       --- PASS: TestServer_HandleData/handle_data_returns_error_if_JSON_is_MALFORMED (0.00s)
+   === RUN   TestServer_Put
+   === RUN   TestServer_Put/put_works
+   === RUN   TestServer_Put/put_returns_error_when_content_is_empty_-_like_malformed_JSON_error
+   === RUN   TestServer_Put/put_returns_error_when_json_malformed
+   === RUN   TestServer_Put/put_returns_error_when_key_is_empty
+   === RUN   TestServer_Put/put_returns_error_when_value_is_empty
+   --- PASS: TestServer_Put (0.00s)
+       --- PASS: TestServer_Put/put_works (0.00s)
+       --- PASS: TestServer_Put/put_returns_error_when_content_is_empty_-_like_malformed_JSON_error (0.00s)
+       --- PASS: TestServer_Put/put_returns_error_when_json_malformed (0.00s)
+       --- PASS: TestServer_Put/put_returns_error_when_key_is_empty (0.00s)
+       --- PASS: TestServer_Put/put_returns_error_when_value_is_empty (0.00s)
+   === RUN   TestServer_Get
+   === RUN   TestServer_Get/get_works_and_returns_correct_status
+   === RUN   TestServer_Get/get_works_and_returns_correct_value
+   === RUN   TestServer_Get/get_returns_error_when_key_doesn't_exist_in_cache
+   === RUN   TestServer_Get/get_returns_error_when_JSON_MALFORMED
+   --- PASS: TestServer_Get (0.00s)
+       --- PASS: TestServer_Get/get_works_and_returns_correct_status (0.00s)
+       --- PASS: TestServer_Get/get_works_and_returns_correct_value (0.00s)
+       --- PASS: TestServer_Get/get_returns_error_when_key_doesn't_exist_in_cache (0.00s)
+       --- PASS: TestServer_Get/get_returns_error_when_JSON_MALFORMED (0.00s)
+   === RUN   TestServer_Post
+   === RUN   TestServer_Post/post_works
+   === RUN   TestServer_Post/post_returns_error_when_key_doesn't_exist_in_cache
+   === RUN   TestServer_Post/post_returns_error_when_JSON_MALFORMED
+   === RUN   TestServer_Post/post_returns_error_when_content_is_empty_-_like_malformed_JSON_error
+   === RUN   TestServer_Post/post_returns_error_when_key_is_empty
+   === RUN   TestServer_Post/post_returns_error_when_value_is_empty
+   --- PASS: TestServer_Post (0.00s)
+       --- PASS: TestServer_Post/post_works (0.00s)
+       --- PASS: TestServer_Post/post_returns_error_when_key_doesn't_exist_in_cache (0.00s)
+       --- PASS: TestServer_Post/post_returns_error_when_JSON_MALFORMED (0.00s)
+       --- PASS: TestServer_Post/post_returns_error_when_content_is_empty_-_like_malformed_JSON_error (0.00s)
+       --- PASS: TestServer_Post/post_returns_error_when_key_is_empty (0.00s)
+       --- PASS: TestServer_Post/post_returns_error_when_value_is_empty (0.00s)
+   === RUN   TestServer_Delete
+   === RUN   TestServer_Delete/delete_works
+   === RUN   TestServer_Delete/delete_returns_error_when_JSON_MALFORMED
+   === RUN   TestServer_Delete/delete_returns_error_when_key_is_empty
+   === RUN   TestServer_Delete/delete_returns_error_when_key_is_not_in_cache
+   --- PASS: TestServer_Delete (0.00s)
+       --- PASS: TestServer_Delete/delete_works (0.00s)
+       --- PASS: TestServer_Delete/delete_returns_error_when_JSON_MALFORMED (0.00s)
+       --- PASS: TestServer_Delete/delete_returns_error_when_key_is_empty (0.00s)
+       --- PASS: TestServer_Delete/delete_returns_error_when_key_is_not_in_cache (0.00s)
+   PASS
+   ok  	CacheCLI/server	0.014s
+   ```
