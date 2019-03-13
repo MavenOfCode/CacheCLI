@@ -167,5 +167,7 @@ https://github.com/spf13/cobra/pull/817
 
 - More on JSON in Go: https://golang.org/pkg/encoding/json/
 
+- More on byte slices and strings: https://programming.guide/go/convert-string-to-byte-slice.html
+
 #### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)
 - See [this project](https://github.com/FavoredFortune/CobraCLI) example CLI application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)
