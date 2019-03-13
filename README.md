@@ -4,6 +4,11 @@
 
 Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction-to-go-language-e66cb5962900) for background on Go and how to install it on Mac OSX
 
+## Instructions to run the full Client/Server CLI Application
+1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
+2. Input `go run main.go` into the command line to start the server
+3. More coming soon...
+
 ## Instructions to build the CLI
 1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
 
@@ -161,6 +166,8 @@ https://github.com/spf13/cobra/pull/817
 - GoLang Blog on JSON handling in GO: https://blog.golang.org/json-and-go
 
 - More on JSON in Go: https://golang.org/pkg/encoding/json/
+
+- More on byte slices and strings: https://programming.guide/go/convert-string-to-byte-slice.html
 
 #### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)
 - See [this project](https://github.com/FavoredFortune/CobraCLI) example CLI application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)

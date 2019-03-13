@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -71,37 +70,79 @@ func StartServer(port string) {
 			Path(route.URI).
 			Handler(handler)
 	}
-	log.Fatal(http.ListenAndServe(port, router))
+	log.Fatal(http.ListenAndServe("localhost:"+ port, router))
 }
 
-//not sure I need this, but might for testing so keeping for now
-//constructor function for generating data
-func NewData(key, value string) *Data{
-	return &Data{key, value}
-}
-
-func (s * Server) Put(w http.ResponseWriter, r *http.Request){
+func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error){
 	var data = Data{}
-	body, err := ioutil.ReadAll(r.Body)
 	//if body is empty error out
+	if r.Body == nil {
+		w.WriteHeader(http.StatusNoContent)
+		response, err := w.Write([]byte("body empty"))
+		if err == nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return data, err
+		}
+		w.WriteHeader(response)
+		return data, nil
+	}
+	//if ReadAll method errors out
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		w.WriteHeader(http.StatusNoContent)
+		response, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return data, err2
+		}
+		w.WriteHeader(response)
+		return data, err
 	}
 	//if request body is closed without content error out
 	if err := r.Body.Close(); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		w.WriteHeader(http.StatusExpectationFailed)
+		response, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return data, err2
+		}
+		w.WriteHeader(response)
+		return data, err
 	}
-	//transform request to json; if json is not correctly configured error out
+	//transform request from json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
-		return
+		response, err2 := w.Write( []byte (err.Error()))
+		if err2 !=nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return data, err2
+		}
+		w.WriteHeader(response)
+		return data, err
+	}
+	return data, nil
+}
+
+func (s *Server) Put(w http.ResponseWriter, r *http.Request){
+	data, err := s.HandleData(w, r)
+	//if handle data method has error and data is empty, error out
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
+		}
 	}
 	//pass encoded json to cache for storage
 	err = s.cache.Create(data.Key, data.Value)
 	if err !=nil {
 		w.WriteHeader(http.StatusBadRequest)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
+		}
 		return
 	}
 	w.Header().Set(headerTypeKey, headerValue)
@@ -110,20 +151,15 @@ func (s * Server) Put(w http.ResponseWriter, r *http.Request){
 }
 
 func (s *Server) Get(w http.ResponseWriter, r *http.Request){
-	var data = Data{}
-	body, err := ioutil.ReadAll(r.Body)
-	//if request is empty error out
+	data, err := s.HandleData(w, r)
+	//if handle data method has error and data is empty, error out
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if err := r.Body.Close(); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	//transform request to json; if json is not correctly configured error out
-	if err := json.Unmarshal(body, &data); err !=nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
+		}
 		return
 	}
 	//pass unmarshalled json to cache for request of data to return
@@ -131,43 +167,51 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 	//if Read returns error return not found status from server to client
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
+		}
 		return
 	}
 	//convert string into byte slice for writer to send content back to client
-	result := []byte(readResult)
-	if err !=nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
+	response, err := w.Write([]byte(readResult))
+	if err != nil {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
+		}
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(result)
+	w.Header().Set(headerTypeKey, headerValue)
+	w.WriteHeader(response)
 	return
-	
 }
 
 func (s *Server) Post(w http.ResponseWriter, r *http.Request){
-	var data = Data{}
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	//if request is empty error out
+	data, err := s.HandleData(w, r)
+	//if handle data method has error and data is empty, error out
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
+		}
 		return
 	}
-	//if request body is empty error out
-	if err := r.Body.Close(); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	//transform request to json; if json is not correctly configured error out
-	if err := json.Unmarshal(body, &data); err !=nil {
-		w.Header().Set(headerTypeKey, headerValue)
-		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
-		return
-	}
-	//pass encoded json to cache for storage update
+	//pass decoded json to cache for storage update
 	err = s.cache.Update(data.Key, data.Value)
+	//if Update returns error pass error back to client
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
+		}
 		return
 	}
 	w.Header().Set(headerTypeKey,headerValue)
@@ -176,38 +220,32 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 }
 
 func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
-	var data = Data{}
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	//if request is empty error out
+	data, err := s.HandleData(w, r)
+	//if handle data method has error and data is empty, error out
 	if err != nil {
-		panic(err)
-	}
-	//if request body is empty error out
-	if err := r.Body.Close(); err != nil {
-		panic(err)
-	}
-	//transform request to json; if json is not correctly configured error out
-	if err := json.Unmarshal(body, &data); err !=nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422)//unprocessable entity (json failed)
-		if err := json.NewEncoder(w).Encode(err); err !=nil {
-			panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
 		}
+		return
 	}
-	//pass encoded json to cache for request of data to return
-	deleteKVC := s.cache.Delete(data.Key)
+	//pass decoded json to cache for request of data to return
+	err = s.cache.Delete(data.Key)
 	//if Delete returns error return not found status from server to client
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(http.StatusNotFound)
-		if err := json.NewEncoder(w).Encode(err); err != nil {
-			panic(err)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
+			w.WriteHeader(http.StatusExpectationFailed)
+			return
 		}
+		return
 	}
-	//if Read returns string (and error not nil) then encode response for return to client
 	w.Header().Set(headerTypeKey, headerValue)
 	w.WriteHeader(http.StatusAccepted)
-	if err := json.NewEncoder(w).Encode(deleteKVC); err != nil {
-		panic(err)
-	}
+	return
+	
+	
 }
