@@ -78,7 +78,6 @@ func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error
 		w.WriteHeader(http.StatusNoContent)
 		_, err := w.Write([]byte("body empty"))
 		if err == nil {
-			w.WriteHeader(http.StatusUnprocessableEntity)
 			return data, err
 		}
 		return data, nil
@@ -89,7 +88,6 @@ func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error
 		w.WriteHeader(http.StatusNoContent)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusUnprocessableEntity)
 			return data, err2
 		}
 		return data, err
@@ -99,7 +97,6 @@ func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error
 		w.WriteHeader(http.StatusExpectationFailed)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusUnprocessableEntity)
 			return data, err2
 		}
 		return data, err
@@ -109,7 +106,6 @@ func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
 		_, err2 := w.Write( []byte (err.Error()))
 		if err2 !=nil {
-			w.WriteHeader(http.StatusExpectationFailed)
 			return data, err2
 		}
 			return data, err
@@ -124,7 +120,6 @@ func (s *Server) Put(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusBadRequest)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
 			return
 		}
 	}
@@ -134,7 +129,6 @@ func (s *Server) Put(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusBadRequest)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
 			return
 		}
 		return
@@ -151,7 +145,6 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusBadRequest)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
 			return
 		}
 		return
@@ -163,24 +156,21 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusNotFound)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
 			return
 		}
 		return
 	}
 	//convert string into byte slice for writer to send content back to client
-	response, err := w.Write([]byte(readResult))
-	if err != nil {
+	_, err1 := w.Write([]byte(readResult))
+	if err1 != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
 			return
 		}
 		return
 	}
 	w.Header().Set(headerTypeKey, headerValue)
-	w.WriteHeader(response)
 	return
 }
 
@@ -191,7 +181,6 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusBadRequest)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
 			return
 		}
 		return
@@ -203,7 +192,6 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusNotFound)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
 			return
 		}
 		return
@@ -220,7 +208,6 @@ func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusBadRequest)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
 			return
 		}
 		return
@@ -232,8 +219,7 @@ func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusNotFound)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-			w.WriteHeader(http.StatusExpectationFailed)
-			return
+				return
 		}
 		return
 	}
