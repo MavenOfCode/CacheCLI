@@ -167,7 +167,19 @@ https://github.com/spf13/cobra/pull/817
 
 - More on JSON in Go: https://golang.org/pkg/encoding/json/
 
+- More on working with JSON in Go: http://polyglot.ninja/golang-json/
+
 - More on byte slices and strings: https://programming.guide/go/convert-string-to-byte-slice.html
+- Blog post on building http client in Go:
+http://polyglot.ninja/golang-making-http-requests/
+
+- Building an HTTP Client http://polyglot.ninja/golang-making-http-requests/
+
+- Trouble shooting HTTP requests: https://nanxiao.me/en/fix-unsupported-protocol-scheme-issue-in-golang/
+
+- Having two executables in one project/repo: (https://stackoverflow.com/questions/50904560/how-to-structure-go-application-to-produce-multiple-binaries/50904959)
+
+- More on HTTP package: https://golang.org/pkg/net/http/
 
 #### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)
 - See [this project](https://github.com/FavoredFortune/CobraCLI) example CLI application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)

@@ -16,8 +16,6 @@ type Data struct {
 	Value string`json:"value"`
 }
 
-//func (d *Data) Read()
-
 //object that implements the handler methods
 //has a port member to listen to a port
 //has access to the KVC for a long running process
@@ -27,8 +25,8 @@ type Server struct {
 	router *mux.Router
 }
 
- const headerTypeKey = "Content-Type"
- const headerValue = "application/json; charset=UTF-8"
+const headerTypeKey = "Content-Type"
+const headerValue = "application/json; charset=UTF-8"
 
 func StartServer(port string) {
 	server := &Server{port:port, cache:kvcache.NewSimpleKVCache()}
@@ -246,6 +244,4 @@ func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
 	w.Header().Set(headerTypeKey, headerValue)
 	w.WriteHeader(http.StatusAccepted)
 	return
-	
-	
 }

@@ -5,12 +5,12 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	
-	"CacheCLI/kvcache"
+	"CacheCLI/client"
 )
 
 //use struct CommandRunner to enable running of either Mock or Real commands with Mock or Simple KVCache
 var CommandRun = CommandRunner{
-	cache: kvcache.NewSimpleKVCache(),
+	cache: client.NewCacheClient(),
 }
 
 //make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'

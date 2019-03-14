@@ -16,12 +16,17 @@ package main
 
 import (
 	_ "github.com/spf13/cobra"
+	"time"
 	
+	"CacheCLI/cmd"
 	"CacheCLI/server"
 )
 
 func main() {
-	server.StartServer("8080")
+	go server.StartServer("8080")
+	time.Sleep(10 * time.Second)
+	cmd.Quicktest()
+	//cmd.Execute()
 }
 
 
