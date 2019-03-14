@@ -10,10 +10,13 @@ Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction
   into a second new directory with `kvc` in the title
 2. From the `server` directory where this repo/project now lives do the following:
    1. Open the `main.go` file and delete the line `cmd.Execute()`
-   2. Open a terminal and type `go build -o bin/startserver`. This command starts the server. Leave this terminal 
+   2. Open a terminal and type `go build -o bin/startserver`. This command builds the server executable.
+   
+     iii. Next, type Leave this 
+   terminal 
     open until you want to end the application. 
     
-        **TO END THE APPLICATION**: Quit the server by typing `Ctrl + C` in 
+      **TO END THE APPLICATION**: Quit the server by typing `Ctrl + C` in 
     this terminal. 
 
 3.From the `kvc` directory where the second copy of this repo now lives, do the following:

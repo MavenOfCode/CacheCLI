@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	
@@ -26,39 +28,60 @@ func (c *CacheClient) Create(key,value string) error{
 	byteData, err := json.Marshal(message)
 	if err != nil {
 		log.Fatalln(err)
+		return err
 	}
 	
 	//create HTTP request (no built in http.Put" in Go http package so using .NewRequest)
 	request, err := http.NewRequest("PUT", URI, bytes.NewBuffer(byteData))
 	if err != nil {
 		log.Fatalln(err)
+		return err
 	}
+	
 	//Send request to server (make request)
 	client := &http.Client{}
 	resp, err := client.Do(request)
 	
-	//check status to see if error exists
+	//close body
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
+	
 	if err != nil {
 		log.Fatalln(err)
+		return err
 	}
 	
-	//if no error, take response stream, set response interface and hydrate it with response body
-	var result string
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
+	//check status to see if  sever error exists
+	if resp.StatusCode != http.StatusCreated {
+		err := fmt.Errorf("create failed: '%v'", resp.StatusCode)
 		log.Fatalln(err)
+		return err
+	}
+	
+	//if no error, take response stream, convert reader to byte slice
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err == io.EOF{
+		//"End of File" means end of response read, convert response to byte slice to string
+		log.Println(string(respBytes))
+		
+		return err
+	}
+	if err != nil {
+		log.Println(err)
+		log.Fatalln(err)
+		
+		return err
 	}
 	
 	//Create command returns string to terminal(log on server side for verification)
-	log.Println(result)
-	fmt.Println(result)
+	//convert byte slice to string
+	log.Println(string(respBytes))
+	fmt.Println(string(respBytes))
 	
-	//close body (because this returns an error couldn't find simple way to defer and handle error so just making it
-	// last call in method)
-	err = resp.Body.Close()
-	if err != nil {
-		log.Fatalln(err)
-	}
 	return nil
 }
 
@@ -68,39 +91,67 @@ func (c *CacheClient) Read(key string) (string, error){
 	byteData, err := json.Marshal(message)
 	if err !=nil {
 		log.Fatalln(err)
+		return "", err
 	}
 
 	//create http request - not using http.Get because it doesn't take in body message
 	request, err := http.NewRequest("GET", URI, bytes.NewBuffer(byteData))
 	if err != nil {
 		log.Fatalln(err)
+		return "", err
 	}
 	
 	//send request to server
 	client := &http.Client{}
 	resp, err := client.Do(request)
 	
-	//check status - report if errors exist
+	//close body
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
+
 	if err != nil {
 		log.Fatalln(err)
+		return "", err
 	}
 	
-	//turn  response into byte slice and then into string with decoder/decode
-	var result string
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
+	//check status - report if errors exist
+	if resp.StatusCode != http.StatusOK {
+		err := fmt.Errorf("read failed: '%v'", resp.StatusCode)
 		log.Fatalln(err)
+		return "", err
+	}
+	
+	//if no error, take response stream, convert reader to byte slice
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err == io.EOF{
+		//"End of File" means end of response read, convert response to byte slice to string
+		result := string(respBytes)
+		log.Println(result)
+		
+		return result, err
+	}
+	if err != nil {
+		log.Println(err)
+		log.Fatalln(err)
+		
+		return "", err
 	}
 	
 	//log result on server side for verification
-	log.Println(result)
+	log.Println(string(respBytes))
 	
 	//close body response
 	err = resp.Body.Close()
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return result, nil
+	
+	//Read command returns a string (result of read query) and error
+	return string(respBytes), nil
 }
 
 func (c *CacheClient) Update(key, value string) error{
@@ -109,39 +160,57 @@ func (c *CacheClient) Update(key, value string) error{
 	byteData, err := json.Marshal(message)
 	if err != nil {
 		log.Fatalln(err)
+		return err
 	}
 	
 	//creates http request
 	request, err := http.NewRequest("POST", URI, bytes.NewBuffer(byteData))
 	if err != nil {
 		log.Fatalln(err)
+		return err
 	}
 	
 	//send request to server
 	client := &http.Client{}
 	resp, err := client.Do(request)
 	
-	//check status - report if errors exist
+	//close body
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
+	
 	if err != nil {
 		log.Fatalln(err)
 	}
 	
-	//if no error exists, decode json and return result
-	var result string
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
+	//check status - report if errors exist
+	if resp.StatusCode != http.StatusCreated{
+		err := fmt.Errorf("update failed: '%v'", resp.StatusCode)
 		log.Fatalln(err)
+		return err
+	}
+	
+	//if no error exists, convert read to byte slice then string and return success string result
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err == io.EOF{
+		//"End of File" means end of response read, convert response to byte slice to string
+		log.Println(string(respBytes))
+		
+		return err
+	}
+	if err != nil {
+		log.Println(err)
+		log.Fatalln(err)
+		
+		return err
 	}
 	
 	//Update command returns string to terminal(log on server side for verification)
-	log.Println(result)
-	fmt.Println(result)
-	
-	//close body
-	err = resp.Body.Close()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	log.Println(string(respBytes))
+	fmt.Println(string(respBytes))
 	return nil
 }
 
@@ -151,38 +220,57 @@ func (c *CacheClient) Delete(key string) error{
 	byteData, err := json.Marshal(message)
 	if err !=nil {
 		log.Fatalln(err)
+		return err
 	}
 	
 	//create http request - not using http.Get because it doesn't take in body message
 	request, err := http.NewRequest("DELETE", URI, bytes.NewBuffer(byteData))
 	if err != nil {
 		log.Fatalln(err)
+		return err
 	}
 	
 	//send request to server
 	client := &http.Client{}
 	resp, err := client.Do(request)
 	
-	//check status - report if errors exist
+	//close body
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
+	
 	if err != nil {
 		log.Fatalln(err)
 	}
 	
-	//turn  response into byte slice and then into string with decoder/decode
-	var result string
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
+	//check status - report if errors exist
+	if resp.StatusCode != http.StatusAccepted {
+		err := fmt.Errorf("delete failed :'%v'", resp.StatusCode)
 		log.Fatalln(err)
+		return err
+	}
+	
+	//turn  response into byte slice and then into string
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err == io.EOF{
+		//"End of File" means end of response read, convert response to byte slice to string
+		log.Println(string(respBytes))
+		
+		return err
+	}
+	if err != nil {
+		log.Println(err)
+		log.Fatalln(err)
+		
+		return err
 	}
 	
 	//Delete command returns string to terminal; also log result on server side for verification
-	log.Println(result)
-	fmt.Println(result)
+	log.Println(string(respBytes))
+	fmt.Println(string(respBytes))
 	
-	//close body response
-	err = resp.Body.Close()
-	if err != nil {
-		log.Fatalln(err)
-	}
 	return  nil
 }

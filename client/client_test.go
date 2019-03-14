@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	
-	"CacheCLI/server"
 )
 
 func TestNewCacheClient(t *testing.T) {
@@ -20,7 +18,6 @@ func TestNewCacheClient(t *testing.T) {
 func TestCacheClient_Create(t *testing.T) {
 	clientCache := NewCacheClient()
 	//client := &http.Client{}
-	go server.StartServer("8080")
 	
 	t.Run("create request works", func(t *testing.T){
 		err := clientCache.Create("foo", "bar")
