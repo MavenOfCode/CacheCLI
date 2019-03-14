@@ -76,47 +76,43 @@ func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error
 	//if body is empty error out
 	if r.Body == nil {
 		w.WriteHeader(http.StatusNoContent)
-		response, err := w.Write([]byte("body empty"))
+		_, err := w.Write([]byte("body empty"))
 		if err == nil {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return data, err
 		}
-		w.WriteHeader(response)
 		return data, nil
 	}
 	//if ReadAll method errors out
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusNoContent)
-		response, err2 := w.Write([]byte(err.Error()))
+		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return data, err2
 		}
-		w.WriteHeader(response)
 		return data, err
 	}
 	//if request body is closed without content error out
 	if err := r.Body.Close(); err != nil {
 		w.WriteHeader(http.StatusExpectationFailed)
-		response, err2 := w.Write([]byte(err.Error()))
+		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return data, err2
 		}
-		w.WriteHeader(response)
 		return data, err
 	}
 	//transform request from json; if json is not correctly configured error out
 	if err := json.Unmarshal(body, &data); err !=nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
-		response, err2 := w.Write( []byte (err.Error()))
+		_, err2 := w.Write( []byte (err.Error()))
 		if err2 !=nil {
 			w.WriteHeader(http.StatusExpectationFailed)
 			return data, err2
 		}
-		w.WriteHeader(response)
-		return data, err
+			return data, err
 	}
 	return data, nil
 }

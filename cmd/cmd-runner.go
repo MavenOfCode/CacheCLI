@@ -18,7 +18,7 @@ func (c *CommandRunner) CreateCmd(cmd *cobra.Command, args []string) (string, er
 	if c.cache != nil {
 		err := c.cache.Create(args[0], args[1])
 		if err == nil {
-			res := fmt.Sprintf("create success - '%v': '%v'\n ", args[0], args[1])
+			res := fmt.Sprintf("create success - '%v': '%v' ", args[0], args[1])
 			return res, nil
 		}
 		return "", fmt.Errorf("create failed: '%v' ", err)
@@ -50,7 +50,7 @@ func (c *CommandRunner) UpdateCmd(cmd *cobra.Command, args []string) (string, er
 	}
 	err := c.cache.Update(args[0], args[1])
 	if err == nil {
-		res := fmt.Sprintf("update success - '%v': '%v'\n ", args[0], args[1])
+		res := fmt.Sprintf("update success - '%v': '%v' ", args[0], args[1])
 		return res, nil
 	}
 	return "", fmt.Errorf("update failed: '%v'", err)
@@ -65,7 +65,7 @@ func (c *CommandRunner) DeleteCmd(cmd *cobra.Command, args []string) (string, er
 	}
 	err := c.cache.Delete(args[0])
 	if err == nil {
-		res := fmt.Sprintf("delete success - '%v': ''\n ", args[0])
+		res := fmt.Sprintf("delete success - '%v': '' ", args[0])
 		
 		return res, nil
 	}
