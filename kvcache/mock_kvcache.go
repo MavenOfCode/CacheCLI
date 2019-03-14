@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-/* MockCache struct and implementation of KVC interface for testing of KVC CLI commands */
+/* MockCache struct that is a member of the  KVC interface for testing of KVC CLI commands */
 type MockKeyValueCache struct {
 	Success      bool
 	ReturnString string

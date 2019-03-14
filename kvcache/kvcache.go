@@ -1,8 +1,6 @@
 package kvcache
 
-import (
-	"fmt"
-)
+import "fmt"
 
 //interface for use by all files (public by using cap at start of name)
 type KeyValueCache interface{

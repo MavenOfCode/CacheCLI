@@ -14,8 +14,7 @@ func TestSimpleKeyValueCache(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-
-	t.Run("it creates", func(t *testing.T) {
+	t.Run("create works to add k-v pair to cache", func(t *testing.T) {
 		testCache := NewSimpleKVCache()
 		require.NotNil(t, testCache)
 		key := "123"
@@ -37,15 +36,24 @@ func TestCreate(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	//break these two apart and test both strings as empty separately
-	t.Run("create returns error when empty string given as parameter", func(t *testing.T) {
+	t.Run("create returns error when given empty key", func(t *testing.T) {
 		testCache := NewSimpleKVCache()
 		require.NotNil(t, testCache)
 		key2 := ""
-		value2 := ""
-
+		value2 := "Value"
+		
 		err2 := testCache.Create(key2, value2)
-		assert.Error(t,err2)
+		assert.Error(t, err2)
+	})
+	
+	t.Run("create returns error when given empty value", func(t *testing.T) {
+		testCache := NewSimpleKVCache()
+		require.NotNil(t, testCache)
+		key2 := "KeyTest"
+		value2 := ""
+		
+		err2 := testCache.Create(key2, value2)
+		assert.Error(t, err2)
 	})
 
 	t.Run("create returns error when key already exists", func(t *testing.T) {
@@ -55,7 +63,7 @@ func TestCreate(t *testing.T) {
 		key := "name"
 		value := "bobby"
 		err := testCache.Create(key,value)
-		assert.NoError(t, err, "no error in create")
+		assert.NoError(t, err)
 
 		key2 := "name"
 		value2 := "betty"
@@ -64,7 +72,6 @@ func TestCreate(t *testing.T) {
 		assert.Error(t, err2)
 	})
 }
-
 
 func TestRead(t *testing.T){
 	t.Run("it reads", func(t *testing.T) {
@@ -93,7 +100,7 @@ func TestRead(t *testing.T){
 		_ = testCache.Create(key2, value2)
 
 		v, _ := testCache.Read(key2)
-		assert.Equal(t,v,value2)
+		assert.Equal(t, v, value2)
 	})
 
 	t.Run("read returns error when given empty string", func(t *testing.T) {
@@ -106,7 +113,7 @@ func TestRead(t *testing.T){
 		_ = testCache.Create(key, value)
 
 		_, err := testCache.Read("")
-		assert.Error(t,err)
+		assert.Error(t, err)
 	})
 
 	t.Run("read returns error when given non-existent key", func(t *testing.T) {
@@ -119,7 +126,7 @@ func TestRead(t *testing.T){
 		_ = testCache.Create(key, value)
 
 		_, err2 := testCache.Read(notExistKey)
-		assert.Error(t,err2)
+		assert.Error(t, err2)
 	})
 }
 
@@ -135,7 +142,7 @@ func TestUpdate(t *testing.T){
 		key = "name"
 		value = "Benny"
 		err := testCache.Update(key, value)
-		assert.Nil(t,err)
+		assert.Nil(t, err)
 
 		read, _ := testCache.Read(key)
 		assert.Equal(t, read, value)
@@ -149,7 +156,7 @@ func TestUpdate(t *testing.T){
 		value := "Hero"
 		err := testCache.Update(key, value)
 
-		assert.Error(t,err)
+		assert.Error(t, err)
 	})
 
 	t.Run("update returns error when key is empty string", func(t *testing.T) {
@@ -159,7 +166,7 @@ func TestUpdate(t *testing.T){
 		key := ""
 		value := "Benny"
 		err := testCache.Update(key, value)
-		assert.Error(t,err)
+		assert.Error(t, err)
 	})
 
 }

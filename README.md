@@ -8,31 +8,28 @@ Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction
 1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home
  user directory into a new directory with `server` in the title and repeat the process with a second copy of the repo
   into a second new directory with `kvc` in the title
-2. From the `server` directory where this repo/project now lives do the following:
-   1. Open the `main.go` file and delete the line `cmd.Execute()`
-   2. Open a terminal and type `go build -o bin/startserver`. This command builds the server executable.
+2. **TO START THE SERVER** From the `server` directory where this repo/project now lives do the following:
+   1. Open the `main.go` in your Go editor of choice and delete the line `cmd.Execute()`
+   2. Open a terminal and type `go build -o startserver`. This command builds the server executable.
    
-     iii. Next, type Leave this 
-   terminal 
+   3. Next, type `./startserver`' Leave this terminal 
     open until you want to end the application. 
     
-      **TO END THE APPLICATION**: Quit the server by typing `Ctrl + C` in 
+   **TO END THE APPLICATION**: Quit the server by typing `Ctrl + C` in 
     this terminal. 
 
-3.From the `kvc` directory where the second copy of this repo now lives, do the following:
-   
-   i. Open the `main.go` file in this project and delete the line `go server.StartServer("8080")`
-    
-   ii. Next in a second terminal in this copy of the project `go build -o bin/kvc`. This generates the binary 
-   executable 
-   that will allow you to use the KVC command line interface (CLI)
-     
-   iii. Follow Instructions to use the CLI below.
+3. **TO START THE CLIENT** From the `kvc` directory where the second copy of this repo now lives, do the following:
+   1. Open the `main.go` file in your Go editor delete the line `go server.StartServer("8080")`
+   2. Next in a second terminal in this copy of the project `go build -o kvc`. This generates the binary 
+   executable that will allow you to use the KVC command line interface (CLI)
+   3. Follow [Instructions](#Instructions to use the CLI) below.
 
-## Instructions to run / use the CLI
-1. To execute any command in this CLI, be sure to be inside it's directory where the executable lives (inside the `bin` 
-directory you just created with the `go build -o bin/kvc` command and  always type `./kvc` first
-1. After writing `./kvc` you may enter your chosen command from these options followed by the required data strings as noted in the [Expected Command Behaviors ](#Expected Command Behaviors) section below : 
+## Instructions to use the CLI
+1. To execute any command in this CLI, be sure to be inside it's directory where the executable lives (inside the 
+project directory you just created with the `go build -o kvc` command and  always type `./kvc` before any command.
+
+2. After writing `./kvc` you may enter your chosen command from these options followed by the required data strings 
+as noted in the [Expected Command Behaviors ](#Expected Command Behaviors) section below : 
     *  **help**, **-h** (no other information input)
     
     *  **create** (followed by a string that will be your `key` to associate with your next string `value`) 
@@ -54,6 +51,8 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
     * empty string provided as key or value
     * key or value not provided
     * key already exists in cache (each key must be unique)
+    * too many or too few arguments provided (i.e. only providing the key or the value, or providing more than just 
+    the key and value)
   
 - **`read`** takes an input string `key` finds that in the cache (checking to be sure cache exists and key exists) and return it's paired `value` string
 
@@ -67,6 +66,7 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
     * empty string provided as key 
     * key provided doesn't exist in cache
     * key provided isn't the key you're looking for
+    * too many or too few arguments provided (i.e. not providing the key, or providing more than just the key)
    
 - **`update`** allows user to input any existing `key` string and change it's `value` string(after checking that cache and key exists)
 
@@ -77,9 +77,11 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
    
   **Possible errors that may occur at time of input**:
     
+   * cache doesn't exist
    * key doesn't already exist in cache to be updated with new value
    * key is an empty string
-
+   * too many or too few arguments provided (i.e. only providing the key or the value, or providing more than just 
+       the key and value)
 
 - **`delete`** allows user to delete `key-value` string pair by inputting just the `key` from the cache (after checking that the cache and key exist)
 
@@ -93,6 +95,7 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
    * empty string provided as key 
    * key provided doesn't exist in cache
    * key is an empty string
+   * too many or too few arguments provided (i.e. not providing the key, or providing more than just the key)
 
 ## How to run tests
 
