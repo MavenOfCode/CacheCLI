@@ -8,6 +8,5 @@ type Route struct {
 	HandlerFuc  http.HandlerFunc
 }
 
-
 type Routes []Route
 

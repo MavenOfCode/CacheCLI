@@ -162,7 +162,6 @@ func TestCommandRunner_UpdateCmd(t *testing.T) {
 		//mockUpdate returns nil
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
-
 	})
 
 	t.Run("update returns error when invalid key provided", func(t *testing.T) {

@@ -12,7 +12,6 @@ type KeyValueCache interface{
 	Delete(key string) error
 }
 
-
 type SimpleKeyValueCache struct{
 	Data map[string]string
 }

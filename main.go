@@ -12,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package CacheCLI
 
 import (
-	_ "github.com/spf13/cobra"
-	
+	"CacheCLI/cmd"
 	"CacheCLI/server"
 )
 
 func main() {
-	server.StartServer("8080")
+	go server.StartServer("8080")
+	cmd.Execute()
+	//comment out one or the other for demo
 }
-
-
-
-

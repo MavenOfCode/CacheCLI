@@ -5,19 +5,30 @@
 Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction-to-go-language-e66cb5962900) for background on Go and how to install it on Mac OSX
 
 ## Instructions to run the full Client/Server CLI Application
-1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
-2. Input `go run main.go` into the command line to start the server
-3. More coming soon...
+1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home
+ user directory into a new directory with `server` in the title and repeat the process with a second copy of the repo
+  into a second new directory with `kvc` in the title
+2. From the `server` directory where this repo/project now lives do the following:
+   1. Open the `main.go` file and delete the line `cmd.Execute()`
+   2. Open a terminal and type `go build -o bin/startserver`. This command starts the server. Leave this terminal 
+    open until you want to end the application. 
+    
+        **TO END THE APPLICATION**: Quit the server by typing `Ctrl + C` in 
+    this terminal. 
 
-## Instructions to build the CLI
-1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home user directory
-
-2. In your terminal, go to the `go/src` directory where the project repo now lives
-3. Type `go build -o bin/kvc` into the command line of the terminal. This generates the binary executable that will allow you to use the command line interface (CLI)
-
+3.From the `kvc` directory where the second copy of this repo now lives, do the following:
+   
+   i. Open the `main.go` file in this project and delete the line `go server.StartServer("8080")`
+    
+   ii. Next in a second terminal in this copy of the project `go build -o bin/kvc`. This generates the binary 
+   executable 
+   that will allow you to use the KVC command line interface (CLI)
+     
+   iii. Follow Instructions to use the CLI below.
 
 ## Instructions to run / use the CLI
-1. To execute any command in this CLI, be sure to be inside it's directory where the file lives (inside the `bin` directory you just created with the `go build -o bin/kvc` command and  always type `./kvc` first
+1. To execute any command in this CLI, be sure to be inside it's directory where the executable lives (inside the `bin` 
+directory you just created with the `go build -o bin/kvc` command and  always type `./kvc` first
 1. After writing `./kvc` you may enter your chosen command from these options followed by the required data strings as noted in the [Expected Command Behaviors ](#Expected Command Behaviors) section below : 
     *  **help**, **-h** (no other information input)
     
@@ -167,7 +178,29 @@ https://github.com/spf13/cobra/pull/817
 
 - More on JSON in Go: https://golang.org/pkg/encoding/json/
 
+- More on working with JSON in Go: http://polyglot.ninja/golang-json/
+
 - More on byte slices and strings: https://programming.guide/go/convert-string-to-byte-slice.html
+- Blog post on building http client in Go:
+http://polyglot.ninja/golang-making-http-requests/
+
+- Building an HTTP Client http://polyglot.ninja/golang-making-http-requests/
+
+- Trouble shooting HTTP requests: https://nanxiao.me/en/fix-unsupported-protocol-scheme-issue-in-golang/
+
+- Having two executables in one project/repo: (https://stackoverflow.com/questions/50904560/how-to-structure-go-application-to-produce-multiple-binaries/50904959)
+
+- More on HTTP package: https://golang.org/pkg/net/http/
+
+- More on multiple packages and binaries: https://ieftimov.com/post/golang-package-multiple-binaries/ with reference 
+repo: https://github.com/fteem/fortune_teller
+
+- More on multiple binaries approach: https://stackoverflow.com/questions/37680437/how-do-you-write-a-package-with-multiple-binaries-in-it
+
+- More on build package from Go docs: https://golang.org/pkg/go/build/
+
+- More on all Go commands from Go docs: https://golang.org/cmd/go/
+
 
 #### [Practice CLI project](https://github.com/FavoredFortune/CobraCLI)
 - See [this project](https://github.com/FavoredFortune/CobraCLI) example CLI application with instructions in the [README](https://github.com/FavoredFortune/CobraCLI/blob/master/README.md)
