@@ -57,30 +57,11 @@ func (c *CacheClient) Create(key,value string) error{
 	
 	//check status to see if  sever error exists
 	if resp.StatusCode != http.StatusCreated {
-		err := fmt.Errorf("create failed: '%v'", resp.StatusCode)
+		msg, _ := ioutil.ReadAll(resp.Body)
+		err := fmt.Errorf("server response: '%v' : '%v'", resp.StatusCode, string(msg))
 		log.Fatalln(err)
 		return err
 	}
-	
-	//if no error, take response stream, convert reader to byte slice
-	respBytes, err := ioutil.ReadAll(resp.Body)
-	if err == io.EOF{
-		//"End of File" means end of response read, convert response to byte slice to string
-		log.Println(string(respBytes))
-		
-		return err
-	}
-	if err != nil {
-		log.Println(err)
-		log.Fatalln(err)
-		
-		return err
-	}
-	
-	//Create command returns string to terminal(log on server side for verification)
-	//convert byte slice to string
-	log.Println(string(respBytes))
-	fmt.Println(string(respBytes))
 	
 	return nil
 }
@@ -120,7 +101,8 @@ func (c *CacheClient) Read(key string) (string, error){
 	
 	//check status - report if errors exist
 	if resp.StatusCode != http.StatusOK {
-		err := fmt.Errorf("read failed: '%v'", resp.StatusCode)
+		msg, _ := ioutil.ReadAll(resp.Body)
+		err := fmt.Errorf("server response: '%v': '%v'", resp.StatusCode, string(msg))
 		log.Fatalln(err)
 		return "", err
 	}
@@ -139,15 +121,6 @@ func (c *CacheClient) Read(key string) (string, error){
 		log.Fatalln(err)
 		
 		return "", err
-	}
-	
-	//log result on server side for verification
-	log.Println(string(respBytes))
-	
-	//close body response
-	err = resp.Body.Close()
-	if err != nil {
-		log.Fatalln(err)
 	}
 	
 	//Read command returns a string (result of read query) and error
@@ -188,29 +161,12 @@ func (c *CacheClient) Update(key, value string) error{
 	
 	//check status - report if errors exist
 	if resp.StatusCode != http.StatusCreated{
-		err := fmt.Errorf("update failed: '%v'", resp.StatusCode)
+		msg, _ := ioutil.ReadAll(resp.Body)
+		err := fmt.Errorf("server response: '%v': '%v'", resp.StatusCode, string(msg))
 		log.Fatalln(err)
 		return err
 	}
 	
-	//if no error exists, convert read to byte slice then string and return success string result
-	respBytes, err := ioutil.ReadAll(resp.Body)
-	if err == io.EOF{
-		//"End of File" means end of response read, convert response to byte slice to string
-		log.Println(string(respBytes))
-		
-		return err
-	}
-	if err != nil {
-		log.Println(err)
-		log.Fatalln(err)
-		
-		return err
-	}
-	
-	//Update command returns string to terminal(log on server side for verification)
-	log.Println(string(respBytes))
-	fmt.Println(string(respBytes))
 	return nil
 }
 
@@ -248,29 +204,11 @@ func (c *CacheClient) Delete(key string) error{
 	
 	//check status - report if errors exist
 	if resp.StatusCode != http.StatusAccepted {
-		err := fmt.Errorf("delete failed :'%v'", resp.StatusCode)
+		msg, _ := ioutil.ReadAll(resp.Body)
+		err := fmt.Errorf("server response: '%v': '%v'", resp.StatusCode, string(msg))
 		log.Fatalln(err)
 		return err
 	}
-	
-	//turn  response into byte slice and then into string
-	respBytes, err := ioutil.ReadAll(resp.Body)
-	if err == io.EOF{
-		//"End of File" means end of response read, convert response to byte slice to string
-		log.Println(string(respBytes))
-		
-		return err
-	}
-	if err != nil {
-		log.Println(err)
-		log.Fatalln(err)
-		
-		return err
-	}
-	
-	//Delete command returns string to terminal; also log result on server side for verification
-	log.Println(string(respBytes))
-	fmt.Println(string(respBytes))
 	
 	return  nil
 }
