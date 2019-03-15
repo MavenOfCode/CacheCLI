@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	
+
 	"CacheCLI/client"
 )
 
@@ -54,7 +54,7 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	
+
 	//attach subcommands to rootcommand
 	RootCmd.AddCommand(createCmd)
 	RootCmd.AddCommand(readCmd)

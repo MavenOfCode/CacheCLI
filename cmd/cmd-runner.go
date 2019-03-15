@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"CacheCLI/kvcache"
 	"fmt"
 	"github.com/spf13/cobra"
-	"CacheCLI/kvcache"
 )
 
 type CommandRunner struct {
@@ -66,7 +66,7 @@ func (c *CommandRunner) DeleteCmd(cmd *cobra.Command, args []string) (string, er
 	err := c.cache.Delete(args[0])
 	if err == nil {
 		res := fmt.Sprintf("delete success - '%v': '' ", args[0])
-		
+
 		return res, nil
 	}
 	return "", fmt.Errorf("delete failed: '%v'", err)

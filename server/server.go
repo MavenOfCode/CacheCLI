@@ -6,22 +6,22 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	
+
 	"CacheCLI/kvcache"
 )
 
 //JSON literal and object for server to take in and return as needed
 type Data struct {
-	Key string `json:"key"`
-	Value string`json:"value"`
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 //object that implements the handler methods
 //has a port member to listen to a port
 //has access to the KVC for a long running process
 type Server struct {
-	port string
-	cache kvcache.KeyValueCache
+	port   string
+	cache  kvcache.KeyValueCache
 	router *mux.Router
 }
 
@@ -29,8 +29,8 @@ const headerTypeKey = "Content-Type"
 const headerValue = "application/json; charset=UTF-8"
 
 func StartServer(port string) {
-	server := &Server{port:port, cache:kvcache.NewSimpleKVCache()}
-	
+	server := &Server{port: port, cache: kvcache.NewSimpleKVCache()}
+
 	//moved all router construction components inside this constructor so it can access the server instance and its
 	// methods
 	routes := Routes{
@@ -55,23 +55,23 @@ func StartServer(port string) {
 			server.Delete,
 		},
 	}
-	
+
 	router := mux.NewRouter().StrictSlash(true)
-	for _,route := range routes{
+	for _, route := range routes {
 		var handler http.Handler
-		
+
 		handler = route.HandlerFuc
 		//put logger here later when I get to that
-		
+
 		router.
 			Methods(route.Method).
 			Path(route.URI).
 			Handler(handler)
 	}
-	log.Fatal(http.ListenAndServe("localhost:"+ port, router))
+	log.Fatal(http.ListenAndServe("localhost:"+port, router))
 }
 
-func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error){
+func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error) {
 	var data = Data{}
 	//if body is empty error out
 	if r.Body == nil {
@@ -102,18 +102,18 @@ func (s *Server) HandleData(w http.ResponseWriter, r *http.Request) (Data, error
 		return data, err
 	}
 	//transform request from json; if json is not correctly configured error out
-	if err := json.Unmarshal(body, &data); err !=nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)//unprocessable entity (json failed)
-		_, err2 := w.Write( []byte (err.Error()))
-		if err2 !=nil {
+	if err := json.Unmarshal(body, &data); err != nil {
+		w.WriteHeader(http.StatusUnprocessableEntity) //unprocessable entity (json failed)
+		_, err2 := w.Write([]byte(err.Error()))
+		if err2 != nil {
 			return data, err2
 		}
-			return data, err
+		return data, err
 	}
 	return data, nil
 }
 
-func (s *Server) Put(w http.ResponseWriter, r *http.Request){
+func (s *Server) Put(w http.ResponseWriter, r *http.Request) {
 	data, err := s.HandleData(w, r)
 	//if handle data method has error and data is empty, error out
 	if err != nil {
@@ -125,7 +125,7 @@ func (s *Server) Put(w http.ResponseWriter, r *http.Request){
 	}
 	//pass encoded json to cache for storage
 	err = s.cache.Create(data.Key, data.Value)
-	if err !=nil {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
@@ -138,7 +138,7 @@ func (s *Server) Put(w http.ResponseWriter, r *http.Request){
 	return
 }
 
-func (s *Server) Get(w http.ResponseWriter, r *http.Request){
+func (s *Server) Get(w http.ResponseWriter, r *http.Request) {
 	data, err := s.HandleData(w, r)
 	//if handle data method has error and data is empty, error out
 	if err != nil {
@@ -174,7 +174,7 @@ func (s *Server) Get(w http.ResponseWriter, r *http.Request){
 	return
 }
 
-func (s *Server) Post(w http.ResponseWriter, r *http.Request){
+func (s *Server) Post(w http.ResponseWriter, r *http.Request) {
 	data, err := s.HandleData(w, r)
 	//if handle data method has error and data is empty, error out
 	if err != nil {
@@ -196,12 +196,12 @@ func (s *Server) Post(w http.ResponseWriter, r *http.Request){
 		}
 		return
 	}
-	w.Header().Set(headerTypeKey,headerValue)
+	w.Header().Set(headerTypeKey, headerValue)
 	w.WriteHeader(http.StatusCreated)
 	return
 }
 
-func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
+func (s *Server) Delete(w http.ResponseWriter, r *http.Request) {
 	data, err := s.HandleData(w, r)
 	//if handle data method has error and data is empty, error out
 	if err != nil {
@@ -219,7 +219,7 @@ func (s *Server) Delete(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusNotFound)
 		_, err2 := w.Write([]byte(err.Error()))
 		if err2 != nil {
-				return
+			return
 		}
 		return
 	}

@@ -46,7 +46,7 @@ func (m *MockKeyValueCache) Update(key, value string) error {
 	if m == nil {
 		return fmt.Errorf("update error: cache empty")
 	}
-	m.Success,_= strconv.ParseBool(key)
+	m.Success, _ = strconv.ParseBool(key)
 	if m.Success {
 		return nil
 	}

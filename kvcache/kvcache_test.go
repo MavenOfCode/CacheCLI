@@ -23,7 +23,7 @@ func TestCreate(t *testing.T) {
 		err := testCache.Create(key, value)
 		assert.NoError(t, err)
 
-		a,_ := testCache.Read(key)
+		a, _ := testCache.Read(key)
 		assert.Equal(t, a, value)
 	})
 
@@ -41,17 +41,17 @@ func TestCreate(t *testing.T) {
 		require.NotNil(t, testCache)
 		key2 := ""
 		value2 := "Value"
-		
+
 		err2 := testCache.Create(key2, value2)
 		assert.Error(t, err2)
 	})
-	
+
 	t.Run("create returns error when given empty value", func(t *testing.T) {
 		testCache := NewSimpleKVCache()
 		require.NotNil(t, testCache)
 		key2 := "KeyTest"
 		value2 := ""
-		
+
 		err2 := testCache.Create(key2, value2)
 		assert.Error(t, err2)
 	})
@@ -62,7 +62,7 @@ func TestCreate(t *testing.T) {
 
 		key := "name"
 		value := "bobby"
-		err := testCache.Create(key,value)
+		err := testCache.Create(key, value)
 		assert.NoError(t, err)
 
 		key2 := "name"
@@ -73,14 +73,14 @@ func TestCreate(t *testing.T) {
 	})
 }
 
-func TestRead(t *testing.T){
+func TestRead(t *testing.T) {
 	t.Run("it reads", func(t *testing.T) {
 		testCache := NewSimpleKVCache()
 		require.NotNil(t, testCache)
 
 		key := "name"
 		value := "Scott"
-		_ = testCache.Create(key,value)
+		_ = testCache.Create(key, value)
 
 		f, _ := testCache.Read(key)
 		assert.Equal(t, f, value)
@@ -122,7 +122,7 @@ func TestRead(t *testing.T){
 
 		key := "name"
 		value := "Scott"
-		notExistKey :="animal"
+		notExistKey := "animal"
 		_ = testCache.Create(key, value)
 
 		_, err2 := testCache.Read(notExistKey)
@@ -130,14 +130,14 @@ func TestRead(t *testing.T){
 	})
 }
 
-func TestUpdate(t *testing.T){
+func TestUpdate(t *testing.T) {
 	t.Run("it can update", func(t *testing.T) {
 		testCache := NewSimpleKVCache()
 		require.NotNil(t, testCache)
 
 		key := "name"
 		value := "Benelli"
-		_ = testCache.Create(key,value)
+		_ = testCache.Create(key, value)
 
 		key = "name"
 		value = "Benny"
@@ -147,7 +147,7 @@ func TestUpdate(t *testing.T){
 		read, _ := testCache.Read(key)
 		assert.Equal(t, read, value)
 	})
-	
+
 	t.Run("update returns error when key not in cache", func(t *testing.T) {
 		testCache := NewSimpleKVCache()
 		require.NotNil(t, testCache)
@@ -171,15 +171,15 @@ func TestUpdate(t *testing.T){
 
 }
 
-func TestDelete(t *testing.T){
-	t.Run("it deletes", func(t *testing.T){
+func TestDelete(t *testing.T) {
+	t.Run("it deletes", func(t *testing.T) {
 		testCache := NewSimpleKVCache()
 		require.NotNil(t, testCache)
 
 		key := "name"
 		value := "Benelli"
 
-		_ = testCache.Create(key,value)
+		_ = testCache.Create(key, value)
 
 		err := testCache.Delete(key)
 		assert.Nil(t, err)
