@@ -21,7 +21,7 @@ background on Go and how to install it on Mac OSX.
     this terminal. 
 
 3. **TO START THE CLIENT** From the `kvc` directory where the second copy of this repo now lives, do the following:
-   1. Open the `main.go` file in your Go editor delete the line `go server.StartServer("8080")`.
+   1. Open the `main.go` file in your Go editor delete the line `server.StartServer("8080")`.
    2. Next in a second terminal in this copy of the project `$ go build -o kvc`. This generates the binary 
    executable that will allow you to use the KVC command line interface (CLI).
    3. Follow [Instructions](#Instructions to use the CLI) below.
