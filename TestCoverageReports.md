@@ -3,7 +3,7 @@
 
 ## KVCache: 91.7% of statements; 0.016s (3/4/19)
 
-## KVCache: 100% of statements; 0.14s
+## KVCache: 100% of statements; 0.14s (3/4/19)
 
 --__**NOTE**__ Ran `go tool cover -html=c.out -o coverage.html` to find where coverage is lacking for this package. See [readme](README.md)  for full details on how to run your own.
 
@@ -171,7 +171,8 @@ total:				(statements)		84.5%
  *some if/err statements untestable in this framework as they are 
   package commands
 
---NOTE Ran go tool cover `-html=c.out -o coverage.html` to find where coverage is lacking for this package. See [readme](README.md) for full details on how to run your own.
+--**NOTE** Ran go tool cover `-html=c.out -o coverage.html` to find where coverage is lacking for this package. See 
+[readme](README.md) for full details on how to run your own.
 
 
 

@@ -25,6 +25,15 @@ type Server struct {
 	router *mux.Router
 }
 
+type Route struct {
+	Method     string
+	URI        string
+	HandlerFuc http.HandlerFunc
+}
+
+type Routes []Route
+
+
 const headerTypeKey = "Content-Type"
 const headerValue = "application/json; charset=UTF-8"
 

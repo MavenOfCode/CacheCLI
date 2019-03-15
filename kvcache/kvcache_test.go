@@ -68,7 +68,6 @@ func TestCreate(t *testing.T) {
 		key2 := "name"
 		value2 := "betty"
 		err2 := testCache.Create(key2, value2)
-
 		assert.Error(t, err2)
 	})
 }
@@ -155,7 +154,6 @@ func TestUpdate(t *testing.T) {
 		key := "name"
 		value := "Hero"
 		err := testCache.Update(key, value)
-
 		assert.Error(t, err)
 	})
 

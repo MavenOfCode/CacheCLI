@@ -22,7 +22,7 @@ func NewCacheClient() *CacheClient {
 }
 
 func (c *CacheClient) Create(key, value string) error {
-	//create JSON with key and value by first putting into data object then marshal to JSON
+	//create JSON with key and value by first putting into data object then marshalling into JSON
 	message := server.Data{Key: key, Value: value}
 	byteData, err := json.Marshal(message)
 	if err != nil {
@@ -37,10 +37,10 @@ func (c *CacheClient) Create(key, value string) error {
 		return err
 	}
 
-	//Make request to server and get a response
+	//make request to server and get a response
 	client := &http.Client{}
 	resp, err := client.Do(request)
-	//close body
+	//close body to prevent leakage
 	defer func() {
 		_ = resp.Body.Close()
 	}()
@@ -51,7 +51,7 @@ func (c *CacheClient) Create(key, value string) error {
 		return err
 	}
 
-	//check status to see if  sever error exists
+	//check status to see if error is returned in server response
 	if resp.StatusCode != http.StatusCreated {
 		msg, _ := ioutil.ReadAll(resp.Body)
 		err := fmt.Errorf("server response: '%v' : '%v'", resp.StatusCode, string(msg))
@@ -70,7 +70,7 @@ func (c *CacheClient) Read(key string) (string, error) {
 		return "", err
 	}
 
-	//create http request - not using http.Get because it doesn't take in body message
+	//create http request
 	request, err := http.NewRequest("GET", c.URI, bytes.NewBuffer(byteData))
 	if err != nil {
 		err := fmt.Errorf("server response: '%v' : http request failed", http.StatusBadRequest)
@@ -80,7 +80,6 @@ func (c *CacheClient) Read(key string) (string, error) {
 	//send request to server
 	client := &http.Client{}
 	resp, err := client.Do(request)
-	//close body
 	defer func() {
 		_ = resp.Body.Close()
 	}()
@@ -91,14 +90,14 @@ func (c *CacheClient) Read(key string) (string, error) {
 		return "", err
 	}
 
-	//check status - report if errors exist
+	//check status - return error if status is not as expected when response received from server
 	if resp.StatusCode != http.StatusOK {
 		msg, _ := ioutil.ReadAll(resp.Body)
 		err := fmt.Errorf("server response: '%v': '%v'", resp.StatusCode, string(msg))
 		return "", err
 	}
 
-	//if no error, take response stream, convert reader to byte slice
+	//if no error, take response content (aka Body - a reader type) and convert to byte slice
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err == io.EOF {
 		//"End of File" means end of response read, convert response to byte slice to string
@@ -114,7 +113,7 @@ func (c *CacheClient) Read(key string) (string, error) {
 }
 
 func (c *CacheClient) Update(key, value string) error {
-	//creates JSON with key and value
+	//create JSON with key and value
 	message := server.Data{Key: key, Value: value}
 	byteData, err := json.Marshal(message)
 	if err != nil {
@@ -122,7 +121,7 @@ func (c *CacheClient) Update(key, value string) error {
 		return err
 	}
 
-	//creates http request
+	//create http request
 	request, err := http.NewRequest("POST", c.URI, bytes.NewBuffer(byteData))
 	if err != nil {
 		err := fmt.Errorf("server response: '%v' : http request failed", http.StatusBadRequest)
@@ -142,7 +141,7 @@ func (c *CacheClient) Update(key, value string) error {
 		return err
 	}
 
-	//check status - report if errors exist
+	//check status - return error if status returned in response from server is not as expected
 	if resp.StatusCode != http.StatusCreated {
 		msg, _ := ioutil.ReadAll(resp.Body)
 		err := fmt.Errorf("server response: '%v': '%v'", resp.StatusCode, string(msg))
@@ -161,7 +160,7 @@ func (c *CacheClient) Delete(key string) error {
 		return err
 	}
 
-	//create http request - not using http.Get because it doesn't take in body message
+	//create http request
 	request, err := http.NewRequest("DELETE", c.URI, bytes.NewBuffer(byteData))
 	if err != nil {
 		err := fmt.Errorf("server response: '%v' : http request failed", http.StatusBadRequest)
@@ -181,7 +180,7 @@ func (c *CacheClient) Delete(key string) error {
 		return err
 	}
 
-	//check status - report if errors exist
+	//check status - return error if status returned in response from server is not as expected
 	if resp.StatusCode != http.StatusAccepted {
 		msg, _ := ioutil.ReadAll(resp.Body)
 		err := fmt.Errorf("server response: '%v': '%v'", resp.StatusCode, string(msg))

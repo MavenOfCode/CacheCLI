@@ -8,13 +8,14 @@ import (
 	"CacheCLI/client"
 )
 
-//use struct CommandRunner to enable running of either Mock or Real commands with Mock or Simple KVCache
+//create CommandRunner to use ClientCache implementation of the KeyValueCache interface
 var CommandRun = CommandRunner{
 	cache: client.NewCacheClient(),
 }
 
-//make root command not executable without subcommand by not providing a 'Run' for the 'rootCmd'
+//require sub commands in CLI by not providing 'Run/RunE' in the definition of 'RootCmd'
 var RootCmd = &cobra.Command{Use: "kvc"}
+
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Args:  cobra.ExactArgs(2),
@@ -47,20 +48,18 @@ var deleteCmd = &cobra.Command{
 	RunE:  Delete,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+// Execute appends sub commands to the root command and sets flags appropriately.
+// This is called by main.main().
 func Execute() {
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	//attach subcommands to rootcommand
 	RootCmd.AddCommand(createCmd)
 	RootCmd.AddCommand(readCmd)
 	RootCmd.AddCommand(updateCmd)
 	RootCmd.AddCommand(deleteCmd)
-	RootCmd.Execute()
+	_ = RootCmd.Execute()
 }
 
 func Create(cmd *cobra.Command, args []string) error {

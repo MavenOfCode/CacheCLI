@@ -2,7 +2,7 @@ package kvcache
 
 import "fmt"
 
-//interface for use by all files (public by using cap at start of name)
+//interface for use by all files (public by using capital letter at start of name)
 type KeyValueCache interface {
 	Create(key, value string) error
 	Read(key string) (string, error)
@@ -14,12 +14,12 @@ type SimpleKeyValueCache struct {
 	Data map[string]string
 }
 
-//constructor function for generating cache
+//constructor function for generating cache - useful in testing
 func NewSimpleKVCache() *SimpleKeyValueCache {
 	return &SimpleKeyValueCache{map[string]string{}}
 }
 
-/*working implementation of KVC interface*/
+//implementation of the SimpleKeyValueCache interface
 func (c *SimpleKeyValueCache) Create(key, value string) error {
 	if c.Data == nil {
 		return fmt.Errorf("create failed: cache does not exist")
@@ -34,7 +34,6 @@ func (c *SimpleKeyValueCache) Create(key, value string) error {
 	}
 
 	c.Data[key] = value
-	fmt.Print(c)
 	return nil
 }
 

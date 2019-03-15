@@ -10,7 +10,8 @@ Provide logs of terminal output/tests with date & time stamps to note progress/c
    - [ ] `Read` command still fails
    - [x] `Update` command works
    - [x] `Delete` command works
-       * _**COMMENT**_ currently using terminal as intermediate test harness. Unit/Integration tests next after commands all work in terminal.
+       
+        _**COMMENT**_ currently using terminal as intermediate test harness. Unit/Integration tests next after commands all work in terminal.
     
        ```
         richm :~/gocode/src/CacheCLI :[thurs-new-cli !] go build -o cli
@@ -370,3 +371,14 @@ _**NOTE**_ : *`put`* method refactored to *`create`*
     ```
 
 3/5/19 - all day - updating tests to get to close as 100% coverage as possible in both cmd and kvcache packages. 
+
+3/6/19 - wrote server and server unit tests
+
+3/7 - 8/19 - refining server unit tests, working on mock server cache improving test coverage
+
+3/11 - 12/19 - refactoring code and tests for efficiency
+
+3/13/19 - wrote client, started client unit tests
+
+3/14/19 - completed client unit tests, completed manual client/server terminal tests, code cleanup, documentation 
+refinement, go fmt confirmation, etc.
