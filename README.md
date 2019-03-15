@@ -2,37 +2,36 @@
 
 ## Don't have Go installed?
 
-Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction-to-go-language-e66cb5962900) for background on Go and how to install it on Mac OSX
+Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction-to-go-language-e66cb5962900) for 
+background on Go and how to install it on Mac OSX.
 
 ## Instructions to run the full Client/Server CLI Application
 1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home
  user directory into a new directory with `server` in the title and repeat the process with a second copy of the repo
-  into a second new directory with `kvc` in the title
-2. From the `server` directory where this repo/project now lives do the following:
-   1. Open the `main.go` file and delete the line `cmd.Execute()`
-   2. Open a terminal and type `go build -o bin/startserver`. This command builds the server executable.
+  into a second new directory with `kvc` in the title.
+2. **TO START THE SERVER** From the `server` directory where this repo/project now lives do the following:
+   1. Open the `main.go` in your Go editor of choice and delete the line `cmd.Execute()` confirm correct import and 
+   save file.
+   2. Open a terminal and type `$ go build -o startserver`. This command builds the server executable.
    
-     iii. Next, type Leave this 
-   terminal 
+   3. Next, type `$ ./startserver`. Leave this terminal 
     open until you want to end the application. 
     
-      **TO END THE APPLICATION**: Quit the server by typing `Ctrl + C` in 
+   **TO END THE APPLICATION**: Quit the server by typing `Ctrl + C` in 
     this terminal. 
 
-3.From the `kvc` directory where the second copy of this repo now lives, do the following:
-   
-   i. Open the `main.go` file in this project and delete the line `go server.StartServer("8080")`
-    
-   ii. Next in a second terminal in this copy of the project `go build -o bin/kvc`. This generates the binary 
-   executable 
-   that will allow you to use the KVC command line interface (CLI)
-     
-   iii. Follow Instructions to use the CLI below.
+3. **TO START THE CLIENT** From the `kvc` directory where the second copy of this repo now lives, do the following:
+   1. Open the `main.go` file in your Go editor delete the line `go server.StartServer("8080")`.
+   2. Next in a second terminal in this copy of the project `$ go build -o kvc`. This generates the binary 
+   executable that will allow you to use the KVC command line interface (CLI).
+   3. Follow [Instructions](#Instructions to use the CLI) below.
 
-## Instructions to run / use the CLI
-1. To execute any command in this CLI, be sure to be inside it's directory where the executable lives (inside the `bin` 
-directory you just created with the `go build -o bin/kvc` command and  always type `./kvc` first
-1. After writing `./kvc` you may enter your chosen command from these options followed by the required data strings as noted in the [Expected Command Behaviors ](#Expected Command Behaviors) section below : 
+## Instructions to use the CLI
+1. To execute any command in this CLI, be sure to be inside it's directory where the executable lives (inside the 
+project directory you just created with the `$ go build -o kvc` command and  always type `./kvc` before any command.
+
+2. After writing `./kvc` you may enter your chosen command from these options followed by the required data strings 
+as noted in the [Expected Command Behaviors ](#Expected CLI Command behaviors) section below : 
     *  **help**, **-h** (no other information input)
     
     *  **create** (followed by a string that will be your `key` to associate with your next string `value`) 
@@ -54,6 +53,8 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
     * empty string provided as key or value
     * key or value not provided
     * key already exists in cache (each key must be unique)
+    * too many or too few arguments provided (i.e. only providing the key or the value, or providing more than just 
+    the key and value)
   
 - **`read`** takes an input string `key` finds that in the cache (checking to be sure cache exists and key exists) and return it's paired `value` string
 
@@ -67,6 +68,7 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
     * empty string provided as key 
     * key provided doesn't exist in cache
     * key provided isn't the key you're looking for
+    * too many or too few arguments provided (i.e. not providing the key, or providing more than just the key)
    
 - **`update`** allows user to input any existing `key` string and change it's `value` string(after checking that cache and key exists)
 
@@ -77,9 +79,11 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
    
   **Possible errors that may occur at time of input**:
     
+   * cache doesn't exist
    * key doesn't already exist in cache to be updated with new value
    * key is an empty string
-
+   * too many or too few arguments provided (i.e. only providing the key or the value, or providing more than just 
+       the key and value)
 
 - **`delete`** allows user to delete `key-value` string pair by inputting just the `key` from the cache (after checking that the cache and key exist)
 
@@ -93,6 +97,7 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
    * empty string provided as key 
    * key provided doesn't exist in cache
    * key is an empty string
+   * too many or too few arguments provided (i.e. not providing the key, or providing more than just the key)
 
 ## How to run tests
 
@@ -115,7 +120,7 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
 - Work with Go
 - Practice writing tests in Go
 - Learn more about structs and interfaces
-- Learn to work with Cobra and other Go libraries
+- Learn to work with  Go libraries like Cobra [Simple Cobra CLI Example](https://github.com/FavoredFortune/CobraCLI)
 - Learn about gRPC and how to connect CLI with simple string key-value cache servers like [KeyValueCache](https://github.com/FavoredFortune/KeyValueCache)
 - Grow project over time to add other technologies and achieve other learning goals
 
@@ -123,20 +128,19 @@ directory you just created with the `go build -o bin/kvc` command and  always ty
 - Go
 - Markdown (MD)
 - Goland (IDE)
-- Stretchr/testify API (github.com/stretchr/testify)
-- Cobra API (https://github.com/spf13/cobra)
-- Flag API (from Go https://golang.org/pkg/flag/)
-_more soon_
+- 3rd Party Go Libraries including: 
+    * Stretchr/testify API (https://github.com/stretchr/testify)
+    * Cobra API (https://github.com/spf13/cobra)
+    * Gorilla API (https://github.com/gorilla/mux)
 
 ## User Stories
 - As a user I want to put in code arguments like `create animal horse` that work with a Go CLI 'client' to take the commands in a terminal and add the values `animal` and `horse` as a `key:value` pair in this `SimpleKeyValueCache` construct
 - As a user I want to type in the command `read animal` to the CLI and have the Go application return `>>horse`
 - As a developer I want unit tests for each method (`Create`, `Read`, `Update`, `Delete`) that prove it works with both good and bad input
-- As a developer I want to use the Cobra library to build the CLI (per Troy Dai)
-* As a developer I want to use the Go Flag library in the CLI (per Troy & Scott)
-- As a developer I want unit tests for each command 
-- As a developer I want integrated tests for the CLI
-- More developer stories details coming soon from Scott
+- As a developer I want to use the Cobra library to build the CLI 
+- As a developer I want unit tests for each package
+- As a developer I want integrated tests for the project
+
 
 ## Future state of CLI
 - Include flags for `key` that are `-k` or `-key` and `-v` and `-value` for value
@@ -147,11 +151,10 @@ _more soon_
 ## Resources
 - Mentors and co-workers: Scott Hornberger and Troy Dai
 - gitignore generated on gitignore.io
-- Article on testing in Go: https://medium.com/@matryer/5-simple-tips-and-tricks-for-writing-unit-tests-in-golang-619653f90742
+- Article on testing in Go: [here](https://medium.com/@matryer/5-simple-tips-and-tricks-for-writing-unit-tests-in-golang-619653f90742)
+
 - BETTER article on testing in Go with your own written unit tests: https://www.calhoun.io/how-to-test-with-go/
 - On building a simple CLI in Go: https://blog.rapid7.com/2016/08/04/build-a-simple-cli-tool-with-golang/
-- More on flags in Go: https://gobyexample.com/command-line-flags
-- If I want to build a CLI using the Go CLI library: https://tutorialedge.net/golang/building-a-cli-in-go/
 
 - For help on Cobra work around for auto generating command files - after using command with -t for package name, must go get file from gocode folder and put in app folder
 https://github.com/spf13/cobra/pull/817
