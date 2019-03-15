@@ -5,7 +5,12 @@
 Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction-to-go-language-e66cb5962900) for 
 background on Go and how to install it on Mac OSX.
 
-## Instructions to run the full Client/Server CLI Application
+## Demo of installation and use
+[LINK TO VIDEO](https://www.youtube.com/watch?v=SSY7CluncUM/)
+
+![YouTube Video Demo Image](https://img.youtube.com/vi/SSY7CluncUM/0.jpg)
+
+## Instructions to RUN the full Client/Server CLI Application
 1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home
  user directory into a new directory with `server` in the title and repeat the process with a second copy of the repo
   into a second new directory with `kvc` in the title.
@@ -26,7 +31,7 @@ background on Go and how to install it on Mac OSX.
    executable that will allow you to use the KVC command line interface (CLI).
    3. Follow [Instructions](#Instructions to use the CLI) below.
 
-## Instructions to use the CLI
+## Instructions to USE the CLI
 1. To execute any command in this CLI, be sure to be inside it's directory where the executable lives (inside the 
 project directory you just created with the `$ go build -o kvc` command and  always type `./kvc` before any command.
 
