@@ -2,104 +2,106 @@
 
 ## Don't have Go installed?
 
-Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction-to-go-language-e66cb5962900) for 
+Visit [this article](https://medium.com/@pknerd/lets-go-a-very-brif-introduction-to-go-language-e66cb5962900) for
 background on Go and how to install it on Mac OSX.
 
 ## Demo of installation and use
+
 [LINK TO VIDEO](https://www.youtube.com/watch?v=SSY7CluncUM/)
 
 ![YouTube Video Demo Image](https://img.youtube.com/vi/SSY7CluncUM/0.jpg)
+
 
 ## Instructions to RUN the full Client/Server CLI Application
 1. Download [this](https://github.com/FavoredFortune/CacheCLI) repo into the same `go/src` directory within your home
  user directory into a new directory with `server` in the title and repeat the process with a second copy of the repo
   into a second new directory with `kvc` in the title.
 2. **TO START THE SERVER** From the `server` directory where this repo/project now lives do the following:
-   1. Open the `main.go` in your Go editor of choice and delete the line `cmd.Execute()` confirm correct import and 
+   1. Open the `main.go` in your Go editor of choice and delete the line `cmd.Execute()` confirm correct import and
    save file.
    2. Open a terminal and type `$ go build -o startserver`. This command builds the server executable.
-   
-   3. Next, type `$ ./startserver`. Leave this terminal 
-    open until you want to end the application. 
-    
-   **TO END THE APPLICATION**: Quit the server by typing `Ctrl + C` in 
-    this terminal. 
+
+   3. Next, type `$ ./startserver`. Leave this terminal
+    open until you want to end the application.
+
+   **TO END THE APPLICATION**: Quit the server by typing `Ctrl + C` in
+    this terminal.
 
 3. **TO START THE CLIENT** From the `kvc` directory where the second copy of this repo now lives, do the following:
    1. Open the `main.go` file in your Go editor delete the line `server.StartServer("8080")`.
-   2. Next in a second terminal in this copy of the project `$ go build -o kvc`. This generates the binary 
+   2. Next in a second terminal in this copy of the project `$ go build -o kvc`. This generates the binary
    executable that will allow you to use the KVC command line interface (CLI).
    3. Follow [Instructions](#Instructions to use the CLI) below.
 
 ## Instructions to USE the CLI
-1. To execute any command in this CLI, be sure to be inside it's directory where the executable lives (inside the 
+1. To execute any command in this CLI, be sure to be inside it's directory where the executable lives (inside the
 project directory you just created with the `$ go build -o kvc` command and  always type `./kvc` before any command.
 
-2. After writing `./kvc` you may enter your chosen command from these options followed by the required data strings 
-as noted in the [Expected Command Behaviors ](#Expected CLI Command behaviors) section below : 
+2. After writing `./kvc` you may enter your chosen command from these options followed by the required data strings
+as noted in the [Expected Command Behaviors ](#Expected CLI Command behaviors) section below :
     *  **help**, **-h** (no other information input)
-    
-    *  **create** (followed by a string that will be your `key` to associate with your next string `value`) 
-    
+
+    *  **create** (followed by a string that will be your `key` to associate with your next string `value`)
+
     *  **read** (followed by a string that will be your `key` to return your `value`)
 
     *  **update** (followed by a string that will be your `key` to associate with your next string `value` that you are updating from the original  `value`)
-    
+
     *  **delete** followed by a string that will be your `key` to remove the `key-value` pair from your data cache)
 
 ## Expected CLI command behaviors
 - **`create`** puts a `key` string and a `value` string into a the designed simple value cache struct as a key:value pair
- 
+
   **Looks like this when entered in the terminal:** `./kvc create <key> <value>`
-  
+
   **Expected output of successful command:** `create success: cache [full cache data key-value pair sets]`
-  
+
   **Possible errors that may occur at time of input:*
     * empty string provided as key or value
     * key or value not provided
     * key already exists in cache (each key must be unique)
-    * too many or too few arguments provided (i.e. only providing the key or the value, or providing more than just 
+    * too many or too few arguments provided (i.e. only providing the key or the value, or providing more than just
     the key and value)
-  
+
 - **`read`** takes an input string `key` finds that in the cache (checking to be sure cache exists and key exists) and return it's paired `value` string
 
    **Looks like this when entered in the terminal:** `./kvc read <key>`
-   
+
    **Expected output of successful command:**
    `>> value for key is: <value>`
-   
+
    **Possible errors that may occur at time of input**:
-     
-    * empty string provided as key 
+
+    * empty string provided as key
     * key provided doesn't exist in cache
     * key provided isn't the key you're looking for
     * too many or too few arguments provided (i.e. not providing the key, or providing more than just the key)
-   
+
 - **`update`** allows user to input any existing `key` string and change it's `value` string(after checking that cache and key exists)
 
    **Looks like this when entered in the terminal:** `./kvc update <key> <value>`
-   
+
    **Expected output of successful command:**
    `update success: cache [full cache data key-value pair sets]`
-   
+
   **Possible errors that may occur at time of input**:
-    
+
    * cache doesn't exist
    * key doesn't already exist in cache to be updated with new value
    * key is an empty string
-   * too many or too few arguments provided (i.e. only providing the key or the value, or providing more than just 
+   * too many or too few arguments provided (i.e. only providing the key or the value, or providing more than just
        the key and value)
 
 - **`delete`** allows user to delete `key-value` string pair by inputting just the `key` from the cache (after checking that the cache and key exist)
 
    **Looks like this when entered in the terminal:** `./kvc delete <key>`
-   
+
    **Expected output of successful command:**
    `delete success: cache [full cache data key-value pair sets, with target key-value pair removed]`
-   
+
   **Possible errors that may occur at time of input**:
-    
-   * empty string provided as key 
+
+   * empty string provided as key
    * key provided doesn't exist in cache
    * key is an empty string
    * too many or too few arguments provided (i.e. not providing the key, or providing more than just the key)
@@ -110,16 +112,16 @@ as noted in the [Expected Command Behaviors ](#Expected CLI Command behaviors) s
  2. To run the tests and see how each passes type `$ go test -v`
  3. To generate a coverage report for the package enter `$go test -cover`
  4. To see the coverage report in html follow these steps:
-        
+
        1. in terminal `$ go test -coverprofile=coverage.out`
- 
+
        2. in terminal `$ go tool cover -html=coverage.out -o coverage.html`
        3. in IDE right click on `coverage.html` file, choose **open in browser** option
  5. After step 4, if you want to see coverage by function in terminal `$ go tool cover -func=coverage.out`
 
 ## See [Test Coverage Reports](TestCoverageReports.md) for details on testing for each package
 
-## See [Change logs](Change_Logs.md) for detailed examples of command behaviors throughtout development 
+## See [Change logs](Change_Logs.md) for detailed examples of command behaviors throughtout development
 
 ## Purpose
 - Work with Go
@@ -133,7 +135,7 @@ as noted in the [Expected Command Behaviors ](#Expected CLI Command behaviors) s
 - Go
 - Markdown (MD)
 - Goland (IDE)
-- 3rd Party Go Libraries including: 
+- 3rd Party Go Libraries including:
     * Stretchr/testify API (https://github.com/stretchr/testify)
     * Cobra API (https://github.com/spf13/cobra)
     * Gorilla API (https://github.com/gorilla/mux)
@@ -142,7 +144,7 @@ as noted in the [Expected Command Behaviors ](#Expected CLI Command behaviors) s
 - As a user I want to put in code arguments like `create animal horse` that work with a Go CLI 'client' to take the commands in a terminal and add the values `animal` and `horse` as a `key:value` pair in this `SimpleKeyValueCache` construct
 - As a user I want to type in the command `read animal` to the CLI and have the Go application return `>>horse`
 - As a developer I want unit tests for each method (`Create`, `Read`, `Update`, `Delete`) that prove it works with both good and bad input
-- As a developer I want to use the Cobra library to build the CLI 
+- As a developer I want to use the Cobra library to build the CLI
 - As a developer I want unit tests for each package
 - As a developer I want integrated tests for the project
 
@@ -203,7 +205,7 @@ http://polyglot.ninja/golang-making-http-requests/
 
 - More on HTTP package: https://golang.org/pkg/net/http/
 
-- More on multiple packages and binaries: https://ieftimov.com/post/golang-package-multiple-binaries/ with reference 
+- More on multiple packages and binaries: https://ieftimov.com/post/golang-package-multiple-binaries/ with reference
 repo: https://github.com/fteem/fortune_teller
 
 - More on multiple binaries approach: https://stackoverflow.com/questions/37680437/how-do-you-write-a-package-with-multiple-binaries-in-it
